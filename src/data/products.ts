@@ -4,7 +4,7 @@ export interface Product {
   price: number;
   image: string;
   badge?: 'mythical' | 'popular' | 'rare' | 'promo';
-  category: 'perm' | 'godhuman' | 'mitica' | 'gamepass';
+  category: 'perm' | 'godhuman' | 'mitica' | 'v4' | 'fisica' | 'gamepass';
   inStock: boolean;
 }
 
@@ -29,6 +29,36 @@ export const godhumanProducts: Product[] = [
   { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 29.90, image: '/images/godhuman-1mitica.png', badge: 'rare', category: 'godhuman', inStock: true },
   { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 34.90, image: '/images/godhuman-2miticas.png', badge: 'rare', category: 'godhuman', inStock: true },
   { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 39.90, image: '/images/godhuman-3miticas.png', badge: 'mythical', category: 'godhuman', inStock: true },
+];
+
+export const miticaProducts: Product[] = [
+  { id: 'mitica-1', name: 'Conta 1 Mítica Aleatória', price: 14.90, image: '/images/mitica-aleatoria.png', badge: 'promo', category: 'mitica', inStock: true },
+  { id: 'mitica-2', name: 'Conta 2 Míticas Aleatórias', price: 24.90, image: '/images/mitica-aleatoria.png', badge: 'popular', category: 'mitica', inStock: true },
+  { id: 'mitica-3', name: 'Conta 3 Míticas Aleatórias', price: 32.90, image: '/images/mitica-aleatoria.png', badge: 'rare', category: 'mitica', inStock: true },
+];
+
+export const v4Products: Product[] = [
+  { id: 'v4-race-1', name: 'Conta V4 Human', price: 39.90, image: '/images/v4.png', badge: 'rare', category: 'v4', inStock: true },
+  { id: 'v4-race-2', name: 'Conta V4 Shark', price: 44.90, image: '/images/v4.png', badge: 'mythical', category: 'v4', inStock: true },
+  { id: 'v4-race-3', name: 'Conta V4 Angel', price: 44.90, image: '/images/v4.png', badge: 'mythical', category: 'v4', inStock: true },
+  { id: 'v4-race-4', name: 'Conta V4 + Godhuman', price: 54.90, image: '/images/v4.png', badge: 'mythical', category: 'v4', inStock: true },
+];
+
+export const fisicaProducts: Product[] = [
+  { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon.png', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/kitsune.png', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control.png', category: 'fisica', inStock: true },
+  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit.png', category: 'fisica', inStock: true },
+  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom.png', category: 'fisica', inStock: true },
+  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/buddha.png', badge: 'promo', category: 'fisica', inStock: true },
+];
+
+export const allProducts: Product[] = [
+  ...permProducts,
+  ...godhumanProducts,
+  ...miticaProducts,
+  ...v4Products,
+  ...fisicaProducts,
 ];
 
 export const testimonials = [
