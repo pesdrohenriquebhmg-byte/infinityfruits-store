@@ -11,17 +11,17 @@ export interface Product {
 export const permProducts: Product[] = [
   { id: 'dragon', name: 'Conta Dragon PERM', price: 22.90, image: '/images/dragon.webp', badge: 'mythical', category: 'perm', inStock: true },
   { id: 'kitsune', name: 'Conta Kitsune PERM', price: 24.90, image: '/images/kitsune.webp', badge: 'mythical', category: 'perm', inStock: true },
-  { id: 'control', name: 'Conta Control PERM', price: 18.90, image: '/images/control.png', badge: 'popular', category: 'perm', inStock: true },
-  { id: 'spirit', name: 'Conta Spirit PERM', price: 17.90, image: '/images/spirit.png', category: 'perm', inStock: true },
-  { id: 'gas', name: 'Conta Gas PERM', price: 14.90, image: '/images/gas.png', category: 'perm', inStock: true },
-  { id: 'trex', name: 'Conta T-Rex PERM', price: 15.90, image: '/images/trex.png', category: 'perm', inStock: true },
-  { id: 'mammoth', name: 'Conta Mammoth PERM', price: 13.90, image: '/images/mammoth.png', category: 'perm', inStock: true },
-  { id: 'venom', name: 'Conta Venom PERM', price: 12.90, image: '/images/venom.png', badge: 'popular', category: 'perm', inStock: true },
-  { id: 'dough', name: 'Conta Dough PERM', price: 11.90, image: '/images/dough.png', category: 'perm', inStock: true },
-  { id: 'shadow', name: 'Conta Shadow PERM', price: 10.90, image: '/images/shadow.png', category: 'perm', inStock: true },
-  { id: 'portal', name: 'Conta Portal PERM', price: 9.90, image: '/images/portal.png', category: 'perm', inStock: true },
-  { id: 'buddha', name: 'Conta Buddha PERM', price: 8.90, image: '/images/buddha.png', badge: 'popular', category: 'perm', inStock: true },
-  { id: 'light', name: 'Conta Light PERM', price: 7.90, image: '/images/light.png', category: 'perm', inStock: true },
+  { id: 'control', name: 'Conta Control PERM', price: 18.90, image: '/images/control-hq.png', badge: 'popular', category: 'perm', inStock: true },
+  { id: 'spirit', name: 'Conta Spirit PERM', price: 17.90, image: '/images/spirit-hq.png', category: 'perm', inStock: true },
+  { id: 'gas', name: 'Conta Gas PERM', price: 14.90, image: '/images/gas-hq.png', category: 'perm', inStock: true },
+  { id: 'trex', name: 'Conta T-Rex PERM', price: 15.90, image: '/images/trex-hq.png', category: 'perm', inStock: true },
+  { id: 'mammoth', name: 'Conta Mammoth PERM', price: 13.90, image: '/images/mammoth-hq.png', category: 'perm', inStock: true },
+  { id: 'venom', name: 'Conta Venom PERM', price: 12.90, image: '/images/venom-hq.png', badge: 'popular', category: 'perm', inStock: true },
+  { id: 'dough', name: 'Conta Dough PERM', price: 11.90, image: '/images/dough-hq.png', category: 'perm', inStock: true },
+  { id: 'shadow', name: 'Conta Shadow PERM', price: 10.90, image: '/images/shadow-hq.png', category: 'perm', inStock: true },
+  { id: 'portal', name: 'Conta Portal PERM', price: 9.90, image: '/images/portal-hq.png', category: 'perm', inStock: true },
+  { id: 'buddha', name: 'Conta Buddha PERM', price: 8.90, image: '/images/buddha-hq.png', badge: 'popular', category: 'perm', inStock: true },
+  { id: 'light', name: 'Conta Light PERM', price: 7.90, image: '/images/light-hq.png', category: 'perm', inStock: true },
   { id: 'yeti', name: 'Conta Yeti PERM', price: 6.90, image: '/images/yeti.webp', category: 'perm', inStock: true },
 ];
 
@@ -47,10 +47,10 @@ export const v4Products: Product[] = [
 export const fisicaProducts: Product[] = [
   { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon.webp', badge: 'popular', category: 'fisica', inStock: true },
   { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/kitsune.webp', badge: 'popular', category: 'fisica', inStock: true },
-  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control.png', category: 'fisica', inStock: true },
-  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit.png', category: 'fisica', inStock: true },
-  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom.png', category: 'fisica', inStock: true },
-  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/buddha.png', badge: 'promo', category: 'fisica', inStock: true },
+  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/buddha-hq.png', badge: 'promo', category: 'fisica', inStock: true },
 ];
 
 export const allProducts: Product[] = [
