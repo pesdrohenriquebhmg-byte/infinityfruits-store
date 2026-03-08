@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '@/data/products';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const badgeStyles: Record<string, string> = {
   mythical: 'badge-mythical',
@@ -15,16 +17,22 @@ const badgeLabels: Record<string, string> = {
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const navigate = useNavigate();
+  const { ref, isVisible } = useScrollAnimation();
+
   return (
-    <div className={`card-gamer flex flex-col ${!product.inStock ? 'opacity-50' : ''}`}>
-      {/* Badge */}
+    <div
+      ref={ref}
+      className={`card-gamer flex flex-col transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+      } ${!product.inStock ? 'opacity-50' : ''}`}
+    >
       {product.badge && (
         <div className="px-3 pt-3">
           <span className={badgeStyles[product.badge]}>{badgeLabels[product.badge]}</span>
         </div>
       )}
 
-      {/* Image */}
       <div className="p-4 flex items-center justify-center h-36 md:h-44">
         <img
           src={product.image}
@@ -34,7 +42,6 @@ const ProductCard = ({ product }: { product: Product }) => {
         />
       </div>
 
-      {/* Info */}
       <div className="px-4 pb-4 flex flex-col flex-1">
         <h3 className="font-display text-sm font-bold text-foreground mb-2 leading-tight">
           {product.name}
@@ -50,7 +57,10 @@ const ProductCard = ({ product }: { product: Product }) => {
             À vista no Pix
           </p>
           {product.inStock ? (
-            <button className="btn-neon w-full text-sm py-2.5">
+            <button
+              onClick={() => navigate(`/checkout?produto=${product.id}`)}
+              className="btn-neon w-full text-sm py-2.5"
+            >
               Comprar agora
             </button>
           ) : (
