@@ -9,8 +9,8 @@ export interface Product {
 }
 
 export const permProducts: Product[] = [
-  { id: 'dragon', name: 'Conta Dragon PERM', price: 22.90, image: '/images/dragon.png', badge: 'mythical', category: 'perm', inStock: true },
-  { id: 'kitsune', name: 'Conta Kitsune PERM', price: 24.90, image: '/images/kitsune.png', badge: 'mythical', category: 'perm', inStock: true },
+  { id: 'dragon', name: 'Conta Dragon PERM', price: 22.90, image: '/images/dragon.webp', badge: 'mythical', category: 'perm', inStock: true },
+  { id: 'kitsune', name: 'Conta Kitsune PERM', price: 24.90, image: '/images/kitsune.webp', badge: 'mythical', category: 'perm', inStock: true },
   { id: 'control', name: 'Conta Control PERM', price: 18.90, image: '/images/control.png', badge: 'popular', category: 'perm', inStock: true },
   { id: 'spirit', name: 'Conta Spirit PERM', price: 17.90, image: '/images/spirit.png', category: 'perm', inStock: true },
   { id: 'gas', name: 'Conta Gas PERM', price: 14.90, image: '/images/gas.png', category: 'perm', inStock: true },
@@ -22,13 +22,13 @@ export const permProducts: Product[] = [
   { id: 'portal', name: 'Conta Portal PERM', price: 9.90, image: '/images/portal.png', category: 'perm', inStock: true },
   { id: 'buddha', name: 'Conta Buddha PERM', price: 8.90, image: '/images/buddha.png', badge: 'popular', category: 'perm', inStock: true },
   { id: 'light', name: 'Conta Light PERM', price: 7.90, image: '/images/light.png', category: 'perm', inStock: true },
-  { id: 'yeti', name: 'Conta Yeti PERM', price: 6.90, image: '/images/yeti.png', category: 'perm', inStock: true },
+  { id: 'yeti', name: 'Conta Yeti PERM', price: 6.90, image: '/images/yeti.webp', category: 'perm', inStock: true },
 ];
 
 export const godhumanProducts: Product[] = [
   { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 29.90, image: '/images/godhuman-1mitica.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 34.90, image: '/images/godhuman-2miticas.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 39.90, image: '/images/godhuman-3miticas.png', badge: 'mythical', category: 'godhuman', inStock: true },
+  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 34.90, image: '/images/godhuman-2miticas.webp', badge: 'rare', category: 'godhuman', inStock: true },
+  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 39.90, image: '/images/godhuman-3miticas.webp', badge: 'mythical', category: 'godhuman', inStock: true },
 ];
 
 export const miticaProducts: Product[] = [
@@ -45,8 +45,8 @@ export const v4Products: Product[] = [
 ];
 
 export const fisicaProducts: Product[] = [
-  { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon.png', badge: 'popular', category: 'fisica', inStock: true },
-  { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/kitsune.png', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon.webp', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/kitsune.webp', badge: 'popular', category: 'fisica', inStock: true },
   { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control.png', category: 'fisica', inStock: true },
   { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit.png', category: 'fisica', inStock: true },
   { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom.png', category: 'fisica', inStock: true },

@@ -3,7 +3,7 @@ import logo from '@/assets/logo.png';
 
 const Navbar = () => {
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+    <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
           <img src={logo} alt="Super Buy" className="w-8 h-8" />
@@ -13,13 +13,13 @@ const Navbar = () => {
           </div>
         </a>
         <div className="flex items-center gap-4">
-          <a href="#produtos" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#produtos" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Ver Contas
           </a>
-          <a href="#como-funciona" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#como-funciona" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Como Funciona
           </a>
-          <button className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
+          <button className="w-9 h-9 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all">
             <ShoppingCart className="w-4 h-4 text-foreground" />
           </button>
         </div>

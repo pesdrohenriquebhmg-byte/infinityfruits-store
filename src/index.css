@@ -89,12 +89,12 @@
   }
 
   .card-gamer {
-    @apply bg-card border border-border rounded-xl overflow-hidden transition-all duration-300;
+    @apply bg-card/80 backdrop-blur-sm border border-border/60 rounded-xl overflow-hidden transition-all duration-300;
   }
 
   .card-gamer:hover {
-    @apply border-primary;
-    box-shadow: 0 0 20px hsl(180 100% 50% / 0.2), 0 8px 32px hsl(0 0% 0% / 0.4);
+    @apply border-primary/60;
+    box-shadow: 0 0 25px hsl(180 100% 50% / 0.15), 0 8px 32px hsl(0 0% 0% / 0.3);
     transform: translateY(-4px);
   }
 

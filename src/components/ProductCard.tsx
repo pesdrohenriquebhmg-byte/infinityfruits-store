@@ -33,11 +33,11 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       )}
 
-      <div className="p-4 flex items-center justify-center h-36 md:h-44">
+      <div className="p-4 flex items-center justify-center h-36 md:h-44 bg-gradient-to-b from-muted/20 to-transparent">
         <img
           src={product.image}
           alt={product.name}
-          className="max-h-full max-w-full object-contain drop-shadow-[0_0_15px_hsl(180,100%,50%,0.15)]"
+          className="max-h-full max-w-full object-contain drop-shadow-[0_0_20px_hsl(180,100%,50%,0.2)] hover:scale-105 transition-transform duration-300"
           loading="lazy"
         />
       </div>
@@ -48,7 +48,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         </h3>
         <div className="mt-auto">
           <div className="flex items-baseline gap-1 mb-1">
-            <span className="text-2xl font-display font-black text-primary">
+            <span className="text-2xl font-display font-black text-primary glow-text-cyan">
               R$ {product.price.toFixed(2).replace('.', ',')}
             </span>
           </div>
