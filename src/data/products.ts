@@ -47,10 +47,10 @@ export const v4Products: Product[] = [
 export const fisicaProducts: Product[] = [
   { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon.webp', badge: 'popular', category: 'fisica', inStock: true },
   { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/kitsune.webp', badge: 'popular', category: 'fisica', inStock: true },
-  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control.png', category: 'fisica', inStock: true },
-  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit.png', category: 'fisica', inStock: true },
-  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom.png', category: 'fisica', inStock: true },
-  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/buddha.png', badge: 'promo', category: 'fisica', inStock: true },
+  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom-hq.png', category: 'fisica', inStock: true },
+  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/buddha-hq.png', badge: 'promo', category: 'fisica', inStock: true },
 ];
 
 export const allProducts: Product[] = [
