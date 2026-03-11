@@ -21,18 +21,18 @@ const MutationSection = ({ products }: MutationSectionProps) => {
   const navigate = useNavigate();
   const { ref, isVisible } = useScrollAnimation();
 
-  // Countdown timer - resets every 2 hours for urgency
-  const [timeLeft, setTimeLeft] = useState({ hours: 1, minutes: 47, seconds: 32 });
+  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 7, minutes: 42, seconds: 15 });
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        const totalSeconds = prev.hours * 3600 + prev.minutes * 60 + prev.seconds - 1;
-        if (totalSeconds <= 0) return { hours: 1, minutes: 59, seconds: 59 };
+        const total = prev.days * 86400 + prev.hours * 3600 + prev.minutes * 60 + prev.seconds - 1;
+        if (total <= 0) return { days: 4, hours: 11, minutes: 59, seconds: 59 };
         return {
-          hours: Math.floor(totalSeconds / 3600),
-          minutes: Math.floor((totalSeconds % 3600) / 60),
-          seconds: totalSeconds % 60,
+          days: Math.floor(total / 86400),
+          hours: Math.floor((total % 86400) / 3600),
+          minutes: Math.floor((total % 3600) / 60),
+          seconds: total % 60,
         };
       });
     }, 1000);
@@ -46,76 +46,59 @@ const MutationSection = ({ products }: MutationSectionProps) => {
       <div className="container mx-auto px-4">
         <div
           ref={ref}
-          className={`text-center mb-8 transition-all duration-700 ${
+          className={`text-center mb-10 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           }`}
         >
           <div className="inline-flex items-center gap-2 mb-3">
-            <div className="h-px w-8 bg-gradient-to-r from-transparent to-destructive" />
-            <span className="text-xs font-display font-bold text-destructive uppercase tracking-widest animate-pulse">🔥</span>
-            <div className="h-px w-8 bg-gradient-to-l from-transparent to-destructive" />
+            <div className="h-px w-8 bg-gradient-to-r from-transparent to-primary" />
+            <span className="text-xs font-display font-bold text-primary uppercase tracking-widest">🔥</span>
+            <div className="h-px w-8 bg-gradient-to-l from-transparent to-primary" />
           </div>
 
-          <h2 className="section-title text-foreground">🔥 CONTAS COM MUTAÇÕES</h2>
+          <h2 className="section-title text-foreground">CONTAS COM MUTAÇÕES</h2>
+          <p className="text-muted-foreground mt-2 text-lg">Edição limitada — garanta antes que acabe</p>
 
-          {/* Urgency banner */}
-          <div className="mt-4 inline-flex flex-col items-center gap-3">
-            <div className="bg-destructive/10 border border-destructive/30 rounded-xl px-6 py-3 animate-pulse">
-              <p className="text-destructive font-display font-bold text-sm md:text-base uppercase tracking-wide">
-                ⚠️ ESTOQUE ACABANDO — Últimas unidades!
-              </p>
-            </div>
-
-            {/* Countdown */}
-            <div className="flex items-center gap-2 text-foreground">
-              <span className="text-xs text-muted-foreground font-display uppercase tracking-wider">Acaba em:</span>
-              <div className="flex gap-1">
-                {[
-                  { value: pad(timeLeft.hours), label: 'h' },
-                  { value: pad(timeLeft.minutes), label: 'm' },
-                  { value: pad(timeLeft.seconds), label: 's' },
-                ].map((unit, i) => (
-                  <div key={i} className="flex items-center gap-0.5">
-                    <span className="bg-destructive/20 border border-destructive/40 text-destructive font-display font-black text-lg md:text-xl px-2 py-1 rounded-md min-w-[2.5rem] text-center">
-                      {unit.value}
-                    </span>
-                    <span className="text-xs text-muted-foreground font-bold">{unit.label}</span>
-                  </div>
-                ))}
-              </div>
+          {/* Countdown subtle */}
+          <div className="mt-4 inline-flex items-center gap-2 bg-muted/30 border border-border rounded-lg px-4 py-2">
+            <span className="text-xs text-muted-foreground font-display uppercase tracking-wider">Disponível por:</span>
+            <div className="flex gap-1 text-sm font-display font-bold text-foreground">
+              <span className="text-primary">{timeLeft.days}d</span>
+              <span className="text-muted-foreground">:</span>
+              <span className="text-primary">{pad(timeLeft.hours)}h</span>
+              <span className="text-muted-foreground">:</span>
+              <span className="text-primary">{pad(timeLeft.minutes)}m</span>
+              <span className="text-muted-foreground">:</span>
+              <span className="text-primary">{pad(timeLeft.seconds)}s</span>
             </div>
           </div>
 
-          <div className="w-24 h-1 mx-auto mt-5 rounded-full bg-gradient-to-r from-destructive to-accent" />
+          <div className="w-24 h-1 mx-auto mt-5 rounded-full bg-gradient-to-r from-primary to-accent" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-5 max-w-4xl mx-auto">
           {products.map((product) => (
             <div
               key={product.id}
-              className="card-gamer flex flex-col ring-1 ring-destructive/20 hover:ring-destructive/50 transition-all duration-300"
+              className="card-gamer flex flex-col"
             >
-              {/* Low stock indicator */}
-              <div className="px-3 pt-3 flex items-center justify-between">
-                {product.badge && (
+              {product.badge && (
+                <div className="px-3 pt-3">
                   <span className={badgeStyles[product.badge]}>{badgeLabels[product.badge]}</span>
-                )}
-                <span className="text-[10px] font-display font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full animate-pulse uppercase">
-                  🔴 Últimas {Math.floor(Math.random() * 3) + 2} unid.
-                </span>
-              </div>
+                </div>
+              )}
 
-              <div className="p-4 flex items-center justify-center h-40 md:h-48 bg-gradient-to-b from-muted/20 to-transparent">
+              <div className="p-4 flex items-center justify-center h-36 md:h-44 bg-gradient-to-b from-muted/20 to-transparent">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="max-h-full max-w-full object-contain drop-shadow-[0_0_25px_hsl(0,80%,50%,0.3)] hover:scale-110 transition-transform duration-300"
+                  className="max-h-full max-w-full object-contain drop-shadow-[0_0_20px_hsl(180,100%,50%,0.2)] hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
               </div>
 
               <div className="px-4 pb-4 flex flex-col flex-1">
-                <h3 className="font-display text-base font-bold text-foreground mb-2 leading-tight">
+                <h3 className="font-display text-sm font-bold text-foreground mb-2 leading-tight">
                   {product.name}
                 </h3>
                 <div className="mt-auto">
@@ -132,7 +115,7 @@ const MutationSection = ({ products }: MutationSectionProps) => {
                     onClick={() => navigate(`/checkout?produto=${product.id}`)}
                     className="btn-neon w-full text-sm py-2.5"
                   >
-                    🔥 Garantir agora
+                    Comprar agora
                   </button>
                 </div>
               </div>
