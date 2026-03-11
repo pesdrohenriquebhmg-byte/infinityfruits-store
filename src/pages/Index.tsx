@@ -3,6 +3,7 @@ import HeroBanner from '@/components/HeroBanner';
 import TestimonialsMarquee from '@/components/TestimonialsMarquee';
 import ProductSection from '@/components/ProductSection';
 import PremiumProductSection from '@/components/PremiumProductSection';
+import MutationSection from '@/components/MutationSection';
 import HowItWorks from '@/components/HowItWorks';
 import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
@@ -13,17 +14,16 @@ import siteBg from '@/assets/site-bg.jpg';
 const Index = () => {
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Background image with blur and low opacity */}
       <div className="fixed inset-0 z-0">
         <img src={siteBg} alt="" className="w-full h-full object-cover blur-sm" />
         <div className="absolute inset-0 bg-background/85" />
       </div>
 
-      {/* Content */}
       <div className="relative z-10">
         <Navbar />
         <HeroBanner />
         <TestimonialsMarquee />
+        <MutationSection products={mutationProducts} />
         <ProductSection
           id="produtos"
           title="CONTAS PERM"
@@ -46,11 +46,6 @@ const Index = () => {
           products={v4Products}
         />
         <PremiumProductSection />
-        <ProductSection
-          title="🔥 CONTAS COM MUTAÇÕES"
-          subtitle="⚠️ Estoque MUITO limitado — últimas unidades disponíveis!"
-          products={mutationProducts}
-        />
         <ProductSection
           title="FRUTAS FÍSICAS"
           subtitle="Frutas físicas avulsas para sua conta"
