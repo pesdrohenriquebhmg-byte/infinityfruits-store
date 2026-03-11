@@ -47,6 +47,11 @@ const Index = () => {
         />
         <PremiumProductSection />
         <ProductSection
+          title="🔥 CONTAS COM MUTAÇÕES"
+          subtitle="⚠️ Estoque MUITO limitado — últimas unidades disponíveis!"
+          products={mutationProducts}
+        />
+        <ProductSection
           title="FRUTAS FÍSICAS"
           subtitle="Frutas físicas avulsas para sua conta"
           products={fisicaProducts}

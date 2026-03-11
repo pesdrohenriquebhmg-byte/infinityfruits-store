@@ -99,6 +99,7 @@ export const allProducts: Product[] = [
   ...godhumanProducts,
   ...miticaProducts,
   ...v4Products,
+  ...mutationProducts,
   ...fisicaProducts,
 ];
 
