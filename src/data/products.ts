@@ -58,6 +58,12 @@ export const fisicaProducts: Product[] = [
   { id: 'fisica-tiger', name: 'Tiger Física', price: 11.60, image: '/images/fruta-tiger.webp', badge: 'rare', category: 'fisica', inStock: true },
   { id: 'fisica-yeti', name: 'Yeti Física', price: 11.00, image: '/images/fruta-yeti.webp', category: 'fisica', inStock: true },
   { id: 'fisica-mammoth', name: 'Mammoth Física', price: 11.20, image: '/images/fruta-mammoth.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-gas', name: 'Gas Física', price: 9.60, image: '/images/fruta-gas.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-spirit', name: 'Spirit Física', price: 9.90, image: '/images/fruta-spirit.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-venom', name: 'Venom Física', price: 10.70, image: '/images/fruta-venom.webp', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-rumble', name: 'Rumble Física', price: 10.90, image: '/images/fruta-rumble.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-blizzard', name: 'Blizzard Física', price: 9.50, image: '/images/fruta-blizzard.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-light', name: 'Light Física', price: 9.80, image: '/images/fruta-light.webp', category: 'fisica', inStock: true },
 ];
 
 export const allProducts: Product[] = [
