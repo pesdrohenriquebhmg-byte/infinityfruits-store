@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Copy, Check, Shield, Zap, Clock, Plus, X } from 'lucide-react';
-import { allProducts, orderBumpProducts, type OrderBump } from '@/data/products';
+import { ArrowLeft, Copy, Check, Shield, Zap, Clock, Loader2 } from 'lucide-react';
+import { allProducts, orderBumpProducts } from '@/data/products';
+import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
 
 const customerSchema = z.object({
@@ -19,9 +20,11 @@ const Checkout = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'form' | 'pix'>('form');
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
-
-  const pixCode = '00020126580014br.gov.bcb.pix0136abc12345-defg-6789-hijk-lmnopqrstuv5204000053039865802BR5925SUPER BUY DIGITAL LTDA6009SAO PAULO62070503***6304ABCD';
+  const [pixCode, setPixCode] = useState('');
+  const [pixQrCode, setPixQrCode] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   if (!product) {
     return (
@@ -49,7 +52,10 @@ const Checkout = () => {
 
   const totalPrice = product.price + bumpsTotal;
 
-  const handleSubmit = () => {
+  // Convert to cents for Buckpay (amount is in cents)
+  const totalAmountCents = Math.round(totalPrice * 100);
+
+  const handleSubmit = async () => {
     const result = customerSchema.safeParse(form);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -60,13 +66,50 @@ const Checkout = () => {
       return;
     }
     setErrors({});
-    setStep('pix');
+    setLoading(true);
+
+    try {
+      const selectedBumpsList = orderBumpProducts
+        .filter(b => selectedBumps.has(b.id))
+        .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
+
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: {
+          product_id: product.id,
+          product_name: product.name,
+          amount: Math.round(product.price * 100),
+          total_amount: totalAmountCents,
+          bumps: selectedBumpsList,
+          buyer: {
+            name: form.name,
+            email: form.email,
+            phone: form.whatsapp.replace(/\D/g, ''),
+          },
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setOrderId(data.order_id);
+      setPixCode(data.pix_code || data.buckpay?.data?.pix_code || data.buckpay?.pix_code || '');
+      setPixQrCode(data.pix_qr_code || data.buckpay?.data?.pix_qr_code || data.buckpay?.pix_qr_code || '');
+      setStep('pix');
+    } catch (err: unknown) {
+      console.error('Payment error:', err);
+      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setErrors({ general: msg });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(pixCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (pixCode) {
+      navigator.clipboard.writeText(pixCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -154,6 +197,12 @@ const Checkout = () => {
           <div className="card-gamer p-6">
             <h3 className="font-display text-lg font-bold text-foreground mb-6">Seus dados</h3>
 
+            {errors.general && (
+              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-xs text-destructive font-medium">{errors.general}</p>
+              </div>
+            )}
+
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">Nome completo</label>
@@ -206,8 +255,19 @@ const Checkout = () => {
               </div>
             </div>
 
-            <button onClick={handleSubmit} className="btn-neon w-full text-sm py-3">
-              Gerar PIX · R$ {totalPrice.toFixed(2).replace('.', ',')}
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Gerando PIX...
+                </>
+              ) : (
+                `Gerar PIX · R$ ${totalPrice.toFixed(2).replace('.', ',')}`
+              )}
             </button>
           </div>
         ) : (
@@ -217,6 +277,13 @@ const Checkout = () => {
             </div>
             <h3 className="font-display text-lg font-bold text-foreground mb-2">Pague com PIX</h3>
             <p className="text-sm text-muted-foreground mb-4">Copie o código abaixo e pague no app do seu banco</p>
+
+            {/* QR Code */}
+            {pixQrCode && (
+              <div className="mb-4">
+                <img src={pixQrCode} alt="QR Code PIX" className="mx-auto w-48 h-48 rounded-lg" />
+              </div>
+            )}
 
             {/* Order summary */}
             <div className="bg-muted/50 rounded-lg p-3 mb-4 text-left text-xs space-y-1">
@@ -236,13 +303,24 @@ const Checkout = () => {
               </div>
             </div>
 
-            <div className="bg-muted rounded-lg p-3 mb-4 break-all text-xs text-muted-foreground text-left font-mono">
-              {pixCode}
-            </div>
+            {/* PIX Code */}
+            {pixCode && (
+              <>
+                <div className="bg-muted rounded-lg p-3 mb-4 break-all text-xs text-muted-foreground text-left font-mono">
+                  {pixCode}
+                </div>
 
-            <button onClick={handleCopy} className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2">
-              {copied ? <><Check className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar código PIX</>}
-            </button>
+                <button onClick={handleCopy} className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2">
+                  {copied ? <><Check className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar código PIX</>}
+                </button>
+              </>
+            )}
+
+            {!pixCode && !pixQrCode && (
+              <div className="p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20 mb-4">
+                <p className="text-xs text-neon-yellow font-medium">⏳ Processando pagamento... Aguarde as instruções de pagamento.</p>
+              </div>
+            )}
 
             <div className="mt-6 p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
               <p className="text-xs text-neon-yellow font-medium">⏱ O pagamento é confirmado automaticamente em até 5 minutos</p>
