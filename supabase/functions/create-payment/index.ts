@@ -91,17 +91,27 @@ Deno.serve(async (req) => {
       },
     };
 
-    const buckpayResponse = await fetch(`${BUCKPAY_API_URL}/transactions`, {
+    console.log("Sending to Buckpay:", JSON.stringify(buckpayPayload));
+
+    const buckpayResponse = await fetch(`${BUCKPAY_API_URL}/api/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${BUCKPAY_SECRET}`,
-        "User-Agent": "Buckpay API",
       },
       body: JSON.stringify(buckpayPayload),
     });
 
-    const buckpayData = await buckpayResponse.json();
+    const responseText = await buckpayResponse.text();
+    console.log("Buckpay response status:", buckpayResponse.status, "body:", responseText.substring(0, 500));
+
+    let buckpayData;
+    try {
+      buckpayData = JSON.parse(responseText);
+    } catch {
+      console.error("Non-JSON response from Buckpay:", responseText.substring(0, 500));
+      throw new Error(`Buckpay retornou resposta inválida (status ${buckpayResponse.status}). Verifique a URL da API.`);
+    }
 
     if (!buckpayResponse.ok) {
       console.error("Buckpay error:", buckpayData);
