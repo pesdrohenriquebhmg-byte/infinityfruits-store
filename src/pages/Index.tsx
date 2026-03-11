@@ -24,6 +24,7 @@ const Index = () => {
         <Navbar />
         <HeroBanner />
         <TestimonialsMarquee />
+        <PremiumProductSection />
         <ProductSection
           id="produtos"
           title="CONTAS PERM"

@@ -66,6 +66,10 @@ export const fisicaProducts: Product[] = [
   { id: 'fisica-light', name: 'Light Física', price: 9.80, image: '/images/fruta-light.webp', category: 'fisica', inStock: true },
 ];
 
+export const premiumProducts: Product[] = [
+  { id: 'conta-premium', name: 'Conta Premium — God Account', price: 169.90, image: '/images/conta-premium.webp', badge: 'mythical', category: 'perm', inStock: true },
+];
+
 export interface OrderBump {
   id: string;
   name: string;
