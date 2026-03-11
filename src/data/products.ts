@@ -47,6 +47,12 @@ export const v4Products: Product[] = [
   { id: 'v4-race-4', name: 'Conta V4 + Godhuman', price: 14.40, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'v4', inStock: true },
 ];
 
+export const mutationProducts: Product[] = [
+  { id: 'empyrean', name: 'Empyrean (Kitsune)', price: 32.90, image: '/images/empyrean.webp', badge: 'mythical', category: 'perm', inStock: true },
+  { id: 'fiend', name: 'Fiend (Yeti)', price: 26.90, image: '/images/fiend.webp', badge: 'rare', category: 'perm', inStock: true },
+  { id: 'werewolf', name: 'Werewolf (Tiger)', price: 24.70, image: '/images/werewolf.webp', badge: 'rare', category: 'perm', inStock: true },
+];
+
 export const fisicaProducts: Product[] = [
   { id: 'fisica-dragon', name: 'Dragon Física', price: 11.80, image: '/images/fruta-dragon.webp', badge: 'popular', category: 'fisica', inStock: true },
   { id: 'fisica-kitsune', name: 'Kitsune Física', price: 11.90, image: '/images/fruta-kitsune.webp', badge: 'popular', category: 'fisica', inStock: true },
