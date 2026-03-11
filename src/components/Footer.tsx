@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="bg-card/60 backdrop-blur-sm border-t border-border/50 py-8">
       <div className="container mx-auto px-4 text-center">
         <p className="font-display text-sm font-bold text-foreground mb-1">
-          SUPER <span className="text-primary">BUY</span>
+          <span className="text-[hsl(200,80%,55%)]">INFINITY</span> <span className="text-[hsl(50,100%,60%)]">FRUITS</span>
         </p>
         <p className="text-xs text-muted-foreground mb-4">
           Loja oficial de contas e itens digitais para Blox Fruits

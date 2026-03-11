@@ -42,9 +42,14 @@
     --neon-green: 140 100% 50%;
     --neon-yellow: 50 100% 55%;
 
+    --logo-sky: 200 80% 55%;
+    --logo-yellow: 50 100% 60%;
+
     --glow-cyan: 0 0 20px hsl(180 100% 50% / 0.4);
     --glow-purple: 0 0 20px hsl(280 100% 65% / 0.4);
     --glow-pink: 0 0 20px hsl(330 100% 60% / 0.4);
+    --glow-sky: 0 0 20px hsl(200 80% 55% / 0.4);
+    --glow-yellow: 0 0 20px hsl(50 100% 60% / 0.4);
 
     --sidebar-background: 230 25% 7%;
     --sidebar-foreground: 210 40% 95%;

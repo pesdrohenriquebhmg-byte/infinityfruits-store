@@ -1,5 +1,5 @@
 import { Shield, Zap, MessageCircle, Star } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo-infinity.png';
 
 const HeroBanner = () => {
   return (
@@ -10,7 +10,7 @@ const HeroBanner = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center py-16">
-        <img src={logo} alt="Super Buy" className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 animate-float drop-shadow-[0_0_30px_hsl(180,100%,50%,0.3)]" />
+        <img src={logo} alt="INFINITY FRUITS" className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-6 animate-float drop-shadow-[0_0_40px_hsl(200,80%,50%,0.4)]" />
 
         {/* Stats badges */}
         <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -29,8 +29,8 @@ const HeroBanner = () => {
         </div>
 
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-2 tracking-tight leading-none">
-          <span className="text-foreground drop-shadow-[0_0_20px_hsl(0,0%,100%,0.1)]">SUPER</span>
-          <span className="text-primary glow-text-cyan ml-3 md:ml-4"> BUY</span>
+          <span className="text-[hsl(200,80%,55%)] drop-shadow-[0_0_20px_hsl(200,80%,60%,0.4)]">INFINITY</span>
+          <span className="text-[hsl(50,100%,60%)] drop-shadow-[0_0_20px_hsl(50,80%,50%,0.4)] ml-3 md:ml-4"> FRUITS</span>
         </h1>
         
         <div className="flex items-center justify-center gap-3 mb-6">
