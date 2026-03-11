@@ -8,8 +8,8 @@ const Navbar = () => {
         <a href="#" className="flex items-center gap-2">
           <img src={logo} alt="INFINITY FRUITS" className="w-10 h-10" />
           <div>
-            <span className="font-display text-sm font-bold text-sky-400">INFINITY </span>
-            <span className="font-display text-sm font-bold text-yellow-400">FRUITS</span>
+            <span className="font-display text-sm font-bold text-[hsl(200,80%,55%)]">INFINITY </span>
+            <span className="font-display text-sm font-bold text-[hsl(50,100%,60%)]">FRUITS</span>
           </div>
         </a>
         <div className="flex items-center gap-4">
