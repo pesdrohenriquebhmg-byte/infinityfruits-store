@@ -16,8 +16,10 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
+      <CartProvider>
+        <CartDrawer />
+        <BrowserRouter>
+          <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
