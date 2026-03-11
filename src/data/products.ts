@@ -88,6 +88,7 @@ export const orderBumpProducts: OrderBump[] = [
 ];
 
 export const allProducts: Product[] = [
+  ...premiumProducts,
   ...permProducts,
   ...godhumanProducts,
   ...miticaProducts,
