@@ -1,5 +1,5 @@
 import { Shield, Zap, MessageCircle, Star } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo-infinity.png';
 
 const HeroBanner = () => {
   return (
