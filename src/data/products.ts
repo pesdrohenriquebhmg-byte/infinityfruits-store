@@ -41,10 +41,10 @@ export const miticaProducts: Product[] = [
 ];
 
 export const v4Products: Product[] = [
-  { id: 'v4-race-1', name: 'Conta V4 Human', price: 39.90, image: '/images/v4-ghoul.jpg', badge: 'rare', category: 'v4', inStock: true },
-  { id: 'v4-race-2', name: 'Conta V4 Shark', price: 44.90, image: '/images/v4-shark.jpg', badge: 'mythical', category: 'v4', inStock: true },
-  { id: 'v4-race-3', name: 'Conta V4 Angel', price: 44.90, image: '/images/v4-angel.jpg', badge: 'mythical', category: 'v4', inStock: true },
-  { id: 'v4-race-4', name: 'Conta V4 + Godhuman', price: 54.90, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'v4', inStock: true },
+  { id: 'v4-race-1', name: 'Conta V4 Human', price: 24.90, image: '/images/v4-ghoul.jpg', badge: 'rare', category: 'v4', inStock: true },
+  { id: 'v4-race-2', name: 'Conta V4 Shark', price: 15.80, image: '/images/v4-shark.jpg', badge: 'mythical', category: 'v4', inStock: true },
+  { id: 'v4-race-3', name: 'Conta V4 Angel', price: 13.90, image: '/images/v4-angel.jpg', badge: 'mythical', category: 'v4', inStock: true },
+  { id: 'v4-race-4', name: 'Conta V4 + Godhuman', price: 14.40, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'v4', inStock: true },
 ];
 
 export const fisicaProducts: Product[] = [
