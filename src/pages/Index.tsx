@@ -24,18 +24,6 @@ const Index = () => {
         <HeroBanner />
         <TestimonialsMarquee />
         <ProductSection
-          id="produtos"
-          title="CONTAS PERM"
-          subtitle="Frutas permanentes com entrega imediata"
-          products={permProducts}
-        />
-        <MutationSection products={mutationProducts} />
-          id="produtos"
-          title="CONTAS PERM"
-          subtitle="Frutas permanentes com entrega imediata"
-          products={permProducts}
-        />
-        <ProductSection
           title="CONTAS COM GODHUMAN"
           subtitle="Combos especiais com Godhuman + Míticas"
           products={godhumanProducts}
