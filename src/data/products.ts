@@ -66,6 +66,23 @@ export const fisicaProducts: Product[] = [
   { id: 'fisica-light', name: 'Light Física', price: 9.80, image: '/images/fruta-light.webp', category: 'fisica', inStock: true },
 ];
 
+export interface OrderBump {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  emoji: string;
+}
+
+export const orderBumpProducts: OrderBump[] = [
+  { id: 'gp-darkblade', name: 'Dark Blade (Gamepass)', price: 8.90, image: '/images/gamepass-darkblade.jpg', emoji: '🗡️' },
+  { id: 'gp-notificador', name: 'Notificador de Frutas (Gamepass)', price: 12.90, image: '/images/gamepass-notificador.jpg', emoji: '📞' },
+  { id: 'gp-espaco', name: '+1 Espaço Fruta (Gamepass)', price: 8.40, image: '/images/gamepass-espaco.jpg', emoji: '📦' },
+  { id: 'gp-maestria', name: '2x Maestria (Gamepass)', price: 8.00, image: '/images/gamepass-maestria.jpg', emoji: '⚔️' },
+  { id: 'gp-money', name: '2x Money (Gamepass)', price: 8.00, image: '/images/gamepass-money.jpg', emoji: '💸' },
+  { id: 'gp-drop', name: '2x Drop (Gamepass)', price: 8.00, image: '/images/gamepass-drop.jpg', emoji: '💪' },
+];
+
 export const allProducts: Product[] = [
   ...permProducts,
   ...godhumanProducts,
