@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const BUCKPAY_API_URL = "https://api.buckpay.com.br";
+const BUCKPAY_API_URL = "https://app.buckpay.com.br";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
