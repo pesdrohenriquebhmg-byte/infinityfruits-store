@@ -64,13 +64,22 @@ const HeroBanner = () => {
             Ver Contas
           </a>
           <a
-            href="https://wa.me/5546999358894?text=Olá"
+            href="https://wa.me/553131578354?text=Olá! Gostaria de comprar contas Blox Fruits"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-neon-purple text-base md:text-lg px-8 py-4 flex items-center justify-center gap-2"
           >
             <MessageCircle className="w-5 h-5" />
             Suporte 24h
+          </a>
+          <a
+            href="https://discord.gg/KXTTMRhgJ8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-display font-bold uppercase tracking-wider px-8 py-4 rounded-lg transition-all duration-300 text-white flex items-center justify-center gap-2 bg-[hsl(235,86%,65%)] hover:bg-[hsl(235,86%,60%)]"
+          >
+            <DiscordIcon />
+            Discord
           </a>
         </div>
 
