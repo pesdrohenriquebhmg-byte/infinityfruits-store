@@ -3,6 +3,7 @@ import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
 import { supabase } from '@/integrations/supabase/client';
+import { useCart } from '@/contexts/CartContext';
 import { z } from 'zod';
 
 const formatPhone = (value: string) => {
@@ -25,8 +26,22 @@ const customerSchema = z.object({
 const Checkout = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const cart = useCart();
+
+  const isCartMode = params.get('carrinho') === 'true';
   const productId = params.get('produto');
-  const product = useMemo(() => allProducts.find(p => p.id === productId), [productId]);
+  const singleProduct = useMemo(() => allProducts.find(p => p.id === productId), [productId]);
+
+  // Build the list of items to checkout
+  const checkoutItems = useMemo(() => {
+    if (isCartMode) {
+      return cart.items.map(i => ({ ...i.product, quantity: i.quantity }));
+    }
+    if (singleProduct) {
+      return [{ ...singleProduct, quantity: 1 }];
+    }
+    return [];
+  }, [isCartMode, cart.items, singleProduct]);
 
   const [form, setForm] = useState({ name: '', email: '', whatsapp: '', terms: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -38,11 +53,13 @@ const Checkout = () => {
   const [pixQrCode, setPixQrCode] = useState('');
   const [orderId, setOrderId] = useState('');
 
-  if (!product) {
+  if (checkoutItems.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold text-foreground mb-4">Produto não encontrado</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground mb-4">
+            {isCartMode ? 'Carrinho vazio' : 'Produto não encontrado'}
+          </h1>
           <Link to="/" className="btn-neon inline-block text-sm">Voltar à loja</Link>
         </div>
       </div>
@@ -58,12 +75,16 @@ const Checkout = () => {
     });
   };
 
+  const itemsSubtotal = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const bumpsTotal = orderBumpProducts
     .filter(b => selectedBumps.has(b.id))
     .reduce((sum, b) => sum + b.price, 0);
-
-  const totalPrice = product.price + bumpsTotal;
+  const totalPrice = itemsSubtotal + bumpsTotal;
   const totalAmountCents = Math.round(totalPrice * 100);
+
+  // For payment, use first product as main or combine names
+  const combinedProductName = checkoutItems.map(i => i.quantity > 1 ? `${i.name} x${i.quantity}` : i.name).join(' + ');
+  const mainProductId = checkoutItems[0].id;
 
   const handleSubmit = async () => {
     const result = customerSchema.safeParse(form);
@@ -87,9 +108,9 @@ const Checkout = () => {
 
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: {
-          product_id: product.id,
-          product_name: product.name,
-          amount: Math.round(product.price * 100),
+          product_id: mainProductId,
+          product_name: combinedProductName,
+          amount: Math.round(itemsSubtotal * 100),
           total_amount: totalAmountCents,
           bumps: selectedBumpsList,
           buyer: { name: form.name, email: form.email, phone },
@@ -104,7 +125,8 @@ const Checkout = () => {
       setPixQrCode(data.pix_qr_code || '');
       setStep('pix');
 
-      // Start polling for payment status
+      if (isCartMode) cart.clearCart();
+
       if (data.order_id) {
         pollPaymentStatus(data.order_id);
       }
@@ -127,7 +149,6 @@ const Checkout = () => {
         }
       } catch { /* ignore */ }
     }, 5000);
-    // Stop after 30 min
     setTimeout(() => clearInterval(interval), 30 * 60 * 1000);
   };
 
@@ -153,16 +174,30 @@ const Checkout = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Product Summary */}
-        <div className="card-gamer p-4 mb-6 flex items-center gap-4">
-          <img src={product.image} alt={product.name} className="w-16 h-16 object-contain" />
-          <div className="flex-1 min-w-0">
-            <h2 className="font-display text-sm font-bold text-foreground truncate">{product.name}</h2>
-            <p className="text-xs text-muted-foreground">Entrega automática</p>
-          </div>
-          <span className="font-display text-xl font-black text-primary whitespace-nowrap">
-            R$ {product.price.toFixed(2).replace('.', ',')}
-          </span>
+        {/* Products Summary */}
+        <div className="card-gamer p-4 mb-6 space-y-3">
+          {checkoutItems.map(item => (
+            <div key={item.id} className="flex items-center gap-4">
+              <img src={item.image} alt={item.name} className="w-14 h-14 object-contain" />
+              <div className="flex-1 min-w-0">
+                <h2 className="font-display text-sm font-bold text-foreground truncate">{item.name}</h2>
+                <p className="text-xs text-muted-foreground">
+                  {item.quantity > 1 ? `${item.quantity}x · ` : ''}Entrega automática
+                </p>
+              </div>
+              <span className="font-display text-lg font-black text-primary whitespace-nowrap">
+                R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}
+              </span>
+            </div>
+          ))}
+          {checkoutItems.length > 1 && (
+            <div className="pt-2 border-t border-border flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Subtotal ({checkoutItems.length} itens)</span>
+              <span className="font-display text-sm font-bold text-foreground">
+                R$ {itemsSubtotal.toFixed(2).replace('.', ',')}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Order Bumps */}
@@ -324,7 +359,7 @@ const Checkout = () => {
           </div>
         ) : (
           <PixStep
-            product={product}
+            checkoutItems={checkoutItems}
             totalPrice={totalPrice}
             selectedBumps={selectedBumps}
             pixCode={pixCode}
@@ -339,8 +374,8 @@ const Checkout = () => {
 };
 
 // Extracted PIX display component
-function PixStep({ product, totalPrice, selectedBumps, pixCode, pixQrCode, copied, onCopy }: {
-  product: { name: string; price: number };
+function PixStep({ checkoutItems, totalPrice, selectedBumps, pixCode, pixQrCode, copied, onCopy }: {
+  checkoutItems: { id: string; name: string; price: number; quantity: number }[];
   totalPrice: number;
   selectedBumps: Set<string>;
   pixCode: string;
@@ -363,10 +398,14 @@ function PixStep({ product, totalPrice, selectedBumps, pixCode, pixQrCode, copie
       )}
 
       <div className="bg-muted/50 rounded-lg p-3 mb-4 text-left text-xs space-y-1">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{product.name}</span>
-          <span className="text-foreground font-medium">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-        </div>
+        {checkoutItems.map(item => (
+          <div key={item.id} className="flex justify-between">
+            <span className="text-muted-foreground">
+              {item.name}{item.quantity > 1 ? ` x${item.quantity}` : ''}
+            </span>
+            <span className="text-foreground font-medium">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+          </div>
+        ))}
         {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
           <div key={b.id} className="flex justify-between">
             <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
