@@ -100,8 +100,8 @@ const Checkout = () => {
       if (data?.error) throw new Error(data.error);
 
       setOrderId(data.order_id);
-      setPixCode(data.pix_code || data.buckpay?.data?.pix_code || data.buckpay?.pix_code || '');
-      setPixQrCode(data.pix_qr_code || data.buckpay?.data?.pix_qr_code || data.buckpay?.pix_qr_code || '');
+      setPixCode(data.pix_code || '');
+      setPixQrCode(data.pix_qr_code || '');
       setStep('pix');
 
       // Start polling for payment status
