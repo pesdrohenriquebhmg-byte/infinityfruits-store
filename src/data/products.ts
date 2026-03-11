@@ -29,15 +29,15 @@ export const permProducts: Product[] = [
 ];
 
 export const godhumanProducts: Product[] = [
-  { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 29.90, image: '/images/godhuman-1mitica-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 34.90, image: '/images/godhuman-2miticas-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 39.90, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'godhuman', inStock: true },
+  { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 9.00, image: '/images/godhuman-1mitica-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
+  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 9.49, image: '/images/godhuman-2miticas-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
+  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 9.99, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'godhuman', inStock: true },
 ];
 
 export const miticaProducts: Product[] = [
-  { id: 'mitica-1', name: 'Conta 1 Mítica Aleatória', price: 14.90, image: '/images/mitica-1.jpg', badge: 'promo', category: 'mitica', inStock: true },
-  { id: 'mitica-2', name: 'Conta 2 Míticas Aleatórias', price: 24.90, image: '/images/mitica-2.jpg', badge: 'popular', category: 'mitica', inStock: true },
-  { id: 'mitica-3', name: 'Conta 3 Míticas Aleatórias', price: 32.90, image: '/images/mitica-3.jpg', badge: 'rare', category: 'mitica', inStock: true },
+  { id: 'mitica-1', name: 'Conta 1 Mítica Aleatória', price: 9.00, image: '/images/mitica-1.jpg', badge: 'promo', category: 'mitica', inStock: true },
+  { id: 'mitica-2', name: 'Conta 2 Míticas Aleatórias', price: 9.49, image: '/images/mitica-2.jpg', badge: 'popular', category: 'mitica', inStock: true },
+  { id: 'mitica-3', name: 'Conta 3 Míticas Aleatórias', price: 9.99, image: '/images/mitica-3.jpg', badge: 'rare', category: 'mitica', inStock: true },
 ];
 
 export const v4Products: Product[] = [
