@@ -24,7 +24,6 @@ const Index = () => {
         <Navbar />
         <HeroBanner />
         <TestimonialsMarquee />
-        <PremiumProductSection />
         <ProductSection
           id="produtos"
           title="CONTAS PERM"
@@ -46,6 +45,7 @@ const Index = () => {
           subtitle="Contas com raça V4 desbloqueada"
           products={v4Products}
         />
+        <PremiumProductSection />
         <ProductSection
           title="FRUTAS FÍSICAS"
           subtitle="Frutas físicas avulsas para sua conta"
