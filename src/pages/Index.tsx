@@ -2,6 +2,7 @@ import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
 import TestimonialsMarquee from '@/components/TestimonialsMarquee';
 import ProductSection from '@/components/ProductSection';
+import PremiumProductSection from '@/components/PremiumProductSection';
 import HowItWorks from '@/components/HowItWorks';
 import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
@@ -23,6 +24,7 @@ const Index = () => {
         <Navbar />
         <HeroBanner />
         <TestimonialsMarquee />
+        <PremiumProductSection />
         <ProductSection
           id="produtos"
           title="CONTAS PERM"
