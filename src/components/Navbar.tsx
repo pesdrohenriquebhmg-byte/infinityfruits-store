@@ -6,7 +6,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <img src={logo} alt="INFINITY FRUITS" className="w-10 h-10" />
+          <img src={logo} alt="INFINITY FRUITS" className="w-auto h-10 object-contain" />
           <div>
             <span className="font-display text-sm font-bold text-[hsl(200,80%,55%)]">INFINITY </span>
             <span className="font-display text-sm font-bold text-[hsl(50,100%,60%)]">FRUITS</span>
