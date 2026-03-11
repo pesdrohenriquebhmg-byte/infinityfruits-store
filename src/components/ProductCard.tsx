@@ -21,6 +21,7 @@ const badgeLabels: Record<string, string> = {
 const ProductCard = ({ product }: { product: Product }) => {
   const navigate = useNavigate();
   const { ref, isVisible } = useScrollAnimation();
+  const { addItem } = useCart();
 
   return (
     <div
