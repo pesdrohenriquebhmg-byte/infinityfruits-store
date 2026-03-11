@@ -6,13 +6,13 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <img src={logo} alt="INFINITY FRUITS" className="w-auto h-10 object-contain" />
+          <img src={logo} alt="INFINITY FRUITS" className="w-auto h-8 md:h-10 object-contain" />
           <div>
-            <span className="font-display text-sm font-bold text-[hsl(200,80%,55%)]">INFINITY </span>
-            <span className="font-display text-sm font-bold text-[hsl(50,100%,60%)]">FRUITS</span>
+            <span className="font-display text-xs md:text-sm font-bold text-logo-sky">INFINITY </span>
+            <span className="font-display text-xs md:text-sm font-bold text-logo-yellow">FRUITS</span>
           </div>
         </a>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           <a href="#produtos" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             Ver Contas
           </a>
