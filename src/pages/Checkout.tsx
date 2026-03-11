@@ -262,9 +262,13 @@ const Checkout = () => {
               </div>
 
               {/* Terms checkbox */}
-              <label className="flex items-start gap-3 cursor-pointer select-none group">
+              <div
+                onClick={() => setForm(p => ({ ...p, terms: !p.terms }))}
+                className="flex items-start gap-3 cursor-pointer select-none group"
+                role="checkbox"
+                aria-checked={form.terms}
+              >
                 <div
-                  onClick={() => setForm(p => ({ ...p, terms: !p.terms }))}
                   className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                     form.terms
                       ? 'bg-primary border-primary'
@@ -275,15 +279,15 @@ const Checkout = () => {
                 </div>
                 <span className="text-xs text-muted-foreground leading-relaxed">
                   Li e concordo com os{' '}
-                  <a href="/termos" target="_blank" className="text-primary underline hover:text-primary/80">
+                  <a href="/termos" target="_blank" onClick={e => e.stopPropagation()} className="text-primary underline hover:text-primary/80">
                     Termos de Uso
                   </a>{' '}
                   e{' '}
-                  <a href="/politica-privacidade" target="_blank" className="text-primary underline hover:text-primary/80">
+                  <a href="/politica-privacidade" target="_blank" onClick={e => e.stopPropagation()} className="text-primary underline hover:text-primary/80">
                     Política de Privacidade
                   </a>
                 </span>
-              </label>
+              </div>
               {errors.terms && <p className="text-xs text-destructive -mt-2">{errors.terms}</p>}
             </div>
 
