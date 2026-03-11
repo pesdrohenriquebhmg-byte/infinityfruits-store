@@ -15,14 +15,14 @@ export const permProducts: Product[] = [
   { id: 'spirit', name: 'Conta Spirit PERM', price: 17.90, image: '/images/spirit-hq.png', category: 'perm', inStock: true },
   { id: 'gas', name: 'Conta Gas PERM', price: 14.90, image: '/images/gas-hq.png', category: 'perm', inStock: true },
   { id: 'trex', name: 'Conta T-Rex PERM', price: 15.90, image: '/images/trex-hq.png', category: 'perm', inStock: true },
-  { id: 'mammoth', name: 'Conta Mammoth PERM', price: 13.90, image: '/images/mammoth-hq.png', category: 'perm', inStock: true },
+  { id: 'mammoth', name: 'Conta Mammoth PERM', price: 14.90, image: '/images/mammoth-hq.png', category: 'perm', inStock: true },
   { id: 'venom', name: 'Conta Venom PERM', price: 12.90, image: '/images/venom-hq.png', badge: 'popular', category: 'perm', inStock: true },
-  { id: 'dough', name: 'Conta Dough PERM', price: 11.90, image: '/images/dough-hq.png', category: 'perm', inStock: true },
+  { id: 'dough', name: 'Conta Dough PERM', price: 12.90, image: '/images/dough-hq.png', category: 'perm', inStock: true },
   { id: 'shadow', name: 'Conta Shadow PERM', price: 10.90, image: '/images/shadow-hq.png', category: 'perm', inStock: true },
   { id: 'portal', name: 'Conta Portal PERM', price: 9.90, image: '/images/portal-hq.png', category: 'perm', inStock: true },
-  { id: 'buddha', name: 'Conta Buddha PERM', price: 8.90, image: '/images/buddha-hq.png', badge: 'popular', category: 'perm', inStock: true },
+  { id: 'buddha', name: 'Conta Buddha PERM', price: 9.90, image: '/images/buddha-hq.png', badge: 'popular', category: 'perm', inStock: true },
   { id: 'light', name: 'Conta Light PERM', price: 7.90, image: '/images/light-hq.png', category: 'perm', inStock: true },
-  { id: 'yeti', name: 'Conta Yeti PERM', price: 6.90, image: '/images/yeti-hq.png', category: 'perm', inStock: true },
+  { id: 'yeti', name: 'Conta Yeti PERM', price: 21.90, image: '/images/yeti-hq.png', category: 'perm', inStock: true },
 ];
 
 export const godhumanProducts: Product[] = [
