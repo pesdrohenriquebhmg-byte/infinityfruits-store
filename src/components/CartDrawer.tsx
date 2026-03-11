@@ -26,9 +26,9 @@ const CartDrawer = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const handleCheckout = (productId: string) => {
+  const handleCheckout = () => {
     setIsOpen(false);
-    navigate(`/checkout?produto=${productId}`);
+    navigate('/checkout?carrinho=true');
   };
 
   const cartContent = (
@@ -94,20 +94,12 @@ const CartDrawer = () => {
           R$ {totalPrice.toFixed(2).replace('.', ',')}
         </span>
       </div>
-      <p className="text-xs text-muted-foreground text-center">
-        ⚠️ Cada produto é comprado separadamente no checkout
-      </p>
-      <div className="flex flex-col gap-2">
-        {items.map(({ product }) => (
-          <button
-            key={product.id}
-            onClick={() => handleCheckout(product.id)}
-            className="btn-neon w-full text-sm py-2.5"
-          >
-            Comprar {product.name}
-          </button>
-        ))}
-      </div>
+      <button
+        onClick={handleCheckout}
+        className="btn-neon w-full text-sm py-3"
+      >
+        Finalizar compra · R$ {totalPrice.toFixed(2).replace('.', ',')}
+      </button>
       <button
         onClick={clearCart}
         className="text-xs text-muted-foreground hover:text-destructive transition-colors text-center mt-1"
