@@ -40,9 +40,9 @@ const Navbar = () => {
           </a>
           <button
             onClick={() => setIsOpen(true)}
-            className="relative w-11 h-11 md:w-9 md:h-9 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all"
+            className="relative w-12 h-12 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all"
           >
-            <ShoppingCart className="w-5 h-5 md:w-4 md:h-4 text-foreground" />
+            <ShoppingCart className="w-6 h-6 text-foreground" />
             {totalItems > 0 && (
               <span
                 className={`absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center ${

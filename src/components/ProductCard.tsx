@@ -63,7 +63,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             <div className="flex gap-2">
               <button
                 onClick={() => navigate(`/checkout?produto=${product.id}`)}
-                className="btn-neon flex-1 text-sm py-2.5"
+                className="btn-neon flex-1 text-sm py-2"
               >
                 Comprar
               </button>
