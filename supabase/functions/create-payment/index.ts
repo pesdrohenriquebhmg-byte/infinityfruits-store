@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const BUCKPAY_API_URL = "https://app.buckpay.com.br";
+const BUCKPAY_API_URL = "https://api.realtechdev.com.br";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -58,7 +58,9 @@ Deno.serve(async (req) => {
       throw new Error("Erro ao criar pedido no banco");
     }
 
-    // Create payment on Buckpay
+    // Phone needs country code for Buckpay (55 + number)
+    const phone = buyer.phone.startsWith("55") ? buyer.phone : `55${buyer.phone}`;
+
     const buckpayPayload = {
       external_id: externalId,
       payment_method: "pix",
@@ -66,8 +68,7 @@ Deno.serve(async (req) => {
       buyer: {
         name: buyer.name,
         email: buyer.email,
-        document: buyer.document || "",
-        phone: buyer.phone,
+        phone,
       },
       product: {
         id: product_id,
@@ -78,39 +79,30 @@ Deno.serve(async (req) => {
         name: product_name,
         quantity: 1,
       },
-      tracking: {
-        ref: null,
-        src: null,
-        sck: null,
-        utm_source: null,
-        utm_medium: null,
-        utm_campaign: null,
-        utm_id: null,
-        utm_term: null,
-        utm_content: null,
-      },
+      postbackUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/buckpay-webhook`,
     };
 
-    console.log("Sending to Buckpay:", JSON.stringify(buckpayPayload));
+    console.log("Calling Buckpay:", JSON.stringify(buckpayPayload));
 
-    const buckpayResponse = await fetch(`${BUCKPAY_API_URL}/api/transactions`, {
+    const buckpayResponse = await fetch(`${BUCKPAY_API_URL}/v1/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${BUCKPAY_SECRET}`,
+        "User-Agent": "Buckpay API",
       },
       body: JSON.stringify(buckpayPayload),
     });
 
     const responseText = await buckpayResponse.text();
-    console.log("Buckpay response status:", buckpayResponse.status, "body:", responseText.substring(0, 500));
+    console.log("Buckpay response:", buckpayResponse.status, responseText.substring(0, 500));
 
     let buckpayData;
     try {
       buckpayData = JSON.parse(responseText);
     } catch {
-      console.error("Non-JSON response from Buckpay:", responseText.substring(0, 500));
-      throw new Error(`Buckpay retornou resposta inválida (status ${buckpayResponse.status}). Verifique a URL da API.`);
+      console.error("Non-JSON response:", responseText.substring(0, 500));
+      throw new Error(`Buckpay retornou resposta inválida (status ${buckpayResponse.status})`);
     }
 
     if (!buckpayResponse.ok) {
@@ -118,23 +110,20 @@ Deno.serve(async (req) => {
       throw new Error(`Buckpay API error [${buckpayResponse.status}]: ${JSON.stringify(buckpayData)}`);
     }
 
+    // Extract PIX data from documented response: data.pix.code / data.pix.qrcode_base64
+    const pixCode = buckpayData.data?.pix?.code || "";
+    const pixQrBase64 = buckpayData.data?.pix?.qrcode_base64 || "";
+    const pixQrCode = pixQrBase64 ? `data:image/png;base64,${pixQrBase64}` : "";
+
     // Update order with Buckpay response
-    const updateData: Record<string, unknown> = {
-      buckpay_id: buckpayData.data?.id || buckpayData.id,
-      buckpay_response: buckpayData,
-    };
-
-    // Extract PIX code if available
-    if (buckpayData.data?.pix_code || buckpayData.pix_code) {
-      updateData.pix_code = buckpayData.data?.pix_code || buckpayData.pix_code;
-    }
-    if (buckpayData.data?.pix_qr_code || buckpayData.pix_qr_code) {
-      updateData.pix_qr_code = buckpayData.data?.pix_qr_code || buckpayData.pix_qr_code;
-    }
-
     await supabase
       .from("orders")
-      .update(updateData)
+      .update({
+        buckpay_id: buckpayData.data?.id || null,
+        buckpay_response: buckpayData,
+        pix_code: pixCode || null,
+        pix_qr_code: pixQrCode || null,
+      })
       .eq("id", order.id);
 
     return new Response(
@@ -142,9 +131,8 @@ Deno.serve(async (req) => {
         success: true,
         order_id: order.id,
         external_id: externalId,
-        pix_code: updateData.pix_code || null,
-        pix_qr_code: updateData.pix_qr_code || null,
-        buckpay: buckpayData,
+        pix_code: pixCode,
+        pix_qr_code: pixQrCode,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
