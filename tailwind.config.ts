@@ -58,6 +58,10 @@ export default {
           green: "hsl(var(--neon-green))",
           yellow: "hsl(var(--neon-yellow))",
         },
+        logo: {
+          sky: "hsl(var(--logo-sky))",
+          yellow: "hsl(var(--logo-yellow))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
