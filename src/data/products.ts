@@ -29,9 +29,9 @@ export const permProducts: Product[] = [
 ];
 
 export const godhumanProducts: Product[] = [
-  { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 29.90, image: '/images/godhuman-1mitica-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 34.90, image: '/images/godhuman-2miticas-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
-  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 39.90, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'godhuman', inStock: true },
+  { id: 'godhuman-1', name: 'Godhuman + 1 Mítica', price: 9.00, image: '/images/godhuman-1mitica-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
+  { id: 'godhuman-2', name: 'Godhuman + 2 Míticas', price: 9.49, image: '/images/godhuman-2miticas-hq.png', badge: 'rare', category: 'godhuman', inStock: true },
+  { id: 'godhuman-3', name: 'Godhuman + 3 Míticas', price: 9.99, image: '/images/godhuman-3miticas-hq.png', badge: 'mythical', category: 'godhuman', inStock: true },
 ];
 
 export const miticaProducts: Product[] = [
