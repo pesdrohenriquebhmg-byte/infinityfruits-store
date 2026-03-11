@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import { ShoppingCart } from 'lucide-react';
 import type { Product } from '@/data/products';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useCart } from '@/contexts/CartContext';
 
 const badgeStyles: Record<string, string> = {
   mythical: 'badge-mythical',
