@@ -1,22 +1,34 @@
 import { useState, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Copy, Check, Shield, Zap, Clock, Loader2 } from 'lucide-react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
 
+const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
 const customerSchema = z.object({
-  name: z.string().trim().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
+  name: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100)
+    .refine(v => v.includes(' '), 'Informe seu nome completo'),
   email: z.string().trim().email('E-mail inválido').max(255),
-  whatsapp: z.string().trim().min(10, 'WhatsApp inválido').max(20),
+  whatsapp: z.string().trim()
+    .transform(v => v.replace(/\D/g, ''))
+    .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos'),
+  terms: z.literal(true, { errorMap: () => ({ message: 'Você precisa aceitar os termos' }) }),
 });
 
 const Checkout = () => {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const productId = params.get('produto');
   const product = useMemo(() => allProducts.find(p => p.id === productId), [productId]);
 
-  const [form, setForm] = useState({ name: '', email: '', whatsapp: '' });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', terms: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'form' | 'pix'>('form');
   const [copied, setCopied] = useState(false);
@@ -51,8 +63,6 @@ const Checkout = () => {
     .reduce((sum, b) => sum + b.price, 0);
 
   const totalPrice = product.price + bumpsTotal;
-
-  // Convert to cents for Buckpay (amount is in cents)
   const totalAmountCents = Math.round(totalPrice * 100);
 
   const handleSubmit = async () => {
@@ -60,7 +70,8 @@ const Checkout = () => {
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach(e => {
-        if (e.path[0]) fieldErrors[e.path[0] as string] = e.message;
+        const field = e.path[0] as string;
+        if (field && !fieldErrors[field]) fieldErrors[field] = e.message;
       });
       setErrors(fieldErrors);
       return;
@@ -69,6 +80,7 @@ const Checkout = () => {
     setLoading(true);
 
     try {
+      const phone = form.whatsapp.replace(/\D/g, '');
       const selectedBumpsList = orderBumpProducts
         .filter(b => selectedBumps.has(b.id))
         .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
@@ -80,11 +92,7 @@ const Checkout = () => {
           amount: Math.round(product.price * 100),
           total_amount: totalAmountCents,
           bumps: selectedBumpsList,
-          buyer: {
-            name: form.name,
-            email: form.email,
-            phone: form.whatsapp.replace(/\D/g, ''),
-          },
+          buyer: { name: form.name, email: form.email, phone },
         },
       });
 
@@ -95,6 +103,11 @@ const Checkout = () => {
       setPixCode(data.pix_code || data.buckpay?.data?.pix_code || data.buckpay?.pix_code || '');
       setPixQrCode(data.pix_qr_code || data.buckpay?.data?.pix_qr_code || data.buckpay?.pix_qr_code || '');
       setStep('pix');
+
+      // Start polling for payment status
+      if (data.order_id) {
+        pollPaymentStatus(data.order_id);
+      }
     } catch (err: unknown) {
       console.error('Payment error:', err);
       const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
@@ -102,6 +115,20 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const pollPaymentStatus = (oid: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await supabase.rpc('get_order_status', { order_id: oid });
+        if (data === 'paid') {
+          clearInterval(interval);
+          navigate(`/pagamento-confirmado?pedido=${oid}`);
+        }
+      } catch { /* ignore */ }
+    }, 5000);
+    // Stop after 30 min
+    setTimeout(() => clearInterval(interval), 30 * 60 * 1000);
   };
 
   const handleCopy = () => {
@@ -163,12 +190,7 @@ const Checkout = () => {
                         <Check className="w-3 h-3 text-primary-foreground" />
                       </div>
                     )}
-                    <img
-                      src={bump.image}
-                      alt={bump.name}
-                      className="w-full aspect-video object-cover rounded-lg mb-2"
-                      loading="lazy"
-                    />
+                    <img src={bump.image} alt={bump.name} className="w-full aspect-video object-cover rounded-lg mb-2" loading="lazy" />
                     <p className="text-xs font-bold text-foreground leading-tight mb-1">
                       {bump.emoji} {bump.name.replace(' (Gamepass)', '')}
                     </p>
@@ -208,7 +230,7 @@ const Checkout = () => {
                 <label className="text-sm font-medium text-foreground mb-1 block">Nome completo</label>
                 <input
                   className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Seu nome"
+                  placeholder="Seu nome completo"
                   value={form.name}
                   onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                 />
@@ -228,15 +250,41 @@ const Checkout = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">WhatsApp</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">WhatsApp (com DDD)</label>
                 <input
                   className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="(00) 00000-0000"
+                  placeholder="(11) 99999-9999"
                   value={form.whatsapp}
-                  onChange={e => setForm(p => ({ ...p, whatsapp: e.target.value }))}
+                  maxLength={15}
+                  onChange={e => setForm(p => ({ ...p, whatsapp: formatPhone(e.target.value) }))}
                 />
                 {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
               </div>
+
+              {/* Terms checkbox */}
+              <label className="flex items-start gap-3 cursor-pointer select-none group">
+                <div
+                  onClick={() => setForm(p => ({ ...p, terms: !p.terms }))}
+                  className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                    form.terms
+                      ? 'bg-primary border-primary'
+                      : 'border-border group-hover:border-muted-foreground'
+                  }`}
+                >
+                  {form.terms && <Check className="w-3 h-3 text-primary-foreground" />}
+                </div>
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                  Li e concordo com os{' '}
+                  <a href="/termos" target="_blank" className="text-primary underline hover:text-primary/80">
+                    Termos de Uso
+                  </a>{' '}
+                  e{' '}
+                  <a href="/politica-privacidade" target="_blank" className="text-primary underline hover:text-primary/80">
+                    Política de Privacidade
+                  </a>
+                </span>
+              </label>
+              {errors.terms && <p className="text-xs text-destructive -mt-2">{errors.terms}</p>}
             </div>
 
             {/* Trust badges */}
@@ -271,69 +319,87 @@ const Checkout = () => {
             </button>
           </div>
         ) : (
-          <div className="card-gamer p-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neon-green/10 flex items-center justify-center">
-              <img src="https://cdn.centralcart.io/public/gateway-icons/icon-pix.svg" alt="PIX" className="w-8 h-8" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-foreground mb-2">Pague com PIX</h3>
-            <p className="text-sm text-muted-foreground mb-4">Copie o código abaixo e pague no app do seu banco</p>
-
-            {/* QR Code */}
-            {pixQrCode && (
-              <div className="mb-4">
-                <img src={pixQrCode} alt="QR Code PIX" className="mx-auto w-48 h-48 rounded-lg" />
-              </div>
-            )}
-
-            {/* Order summary */}
-            <div className="bg-muted/50 rounded-lg p-3 mb-4 text-left text-xs space-y-1">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{product.name}</span>
-                <span className="text-foreground font-medium">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-              </div>
-              {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
-                <div key={b.id} className="flex justify-between">
-                  <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
-                  <span className="text-foreground font-medium">R$ {b.price.toFixed(2).replace('.', ',')}</span>
-                </div>
-              ))}
-              <div className="flex justify-between pt-2 border-t border-border font-bold">
-                <span className="text-foreground">Total</span>
-                <span className="text-primary font-display">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
-              </div>
-            </div>
-
-            {/* PIX Code */}
-            {pixCode && (
-              <>
-                <div className="bg-muted rounded-lg p-3 mb-4 break-all text-xs text-muted-foreground text-left font-mono">
-                  {pixCode}
-                </div>
-
-                <button onClick={handleCopy} className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2">
-                  {copied ? <><Check className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar código PIX</>}
-                </button>
-              </>
-            )}
-
-            {!pixCode && !pixQrCode && (
-              <div className="p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20 mb-4">
-                <p className="text-xs text-neon-yellow font-medium">⏳ Processando pagamento... Aguarde as instruções de pagamento.</p>
-              </div>
-            )}
-
-            <div className="mt-6 p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
-              <p className="text-xs text-neon-yellow font-medium">⏱ O pagamento é confirmado automaticamente em até 5 minutos</p>
-            </div>
-
-            <p className="text-xs text-muted-foreground mt-4">
-              Após o pagamento, a conta será enviada para seu e-mail e WhatsApp.
-            </p>
-          </div>
+          <PixStep
+            product={product}
+            totalPrice={totalPrice}
+            selectedBumps={selectedBumps}
+            pixCode={pixCode}
+            pixQrCode={pixQrCode}
+            copied={copied}
+            onCopy={handleCopy}
+          />
         )}
       </div>
     </div>
   );
 };
+
+// Extracted PIX display component
+function PixStep({ product, totalPrice, selectedBumps, pixCode, pixQrCode, copied, onCopy }: {
+  product: { name: string; price: number };
+  totalPrice: number;
+  selectedBumps: Set<string>;
+  pixCode: string;
+  pixQrCode: string;
+  copied: boolean;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="card-gamer p-6 text-center">
+      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neon-green/10 flex items-center justify-center">
+        <img src="https://cdn.centralcart.io/public/gateway-icons/icon-pix.svg" alt="PIX" className="w-8 h-8" />
+      </div>
+      <h3 className="font-display text-lg font-bold text-foreground mb-2">Pague com PIX</h3>
+      <p className="text-sm text-muted-foreground mb-4">Copie o código abaixo e pague no app do seu banco</p>
+
+      {pixQrCode && (
+        <div className="mb-4">
+          <img src={pixQrCode} alt="QR Code PIX" className="mx-auto w-48 h-48 rounded-lg" />
+        </div>
+      )}
+
+      <div className="bg-muted/50 rounded-lg p-3 mb-4 text-left text-xs space-y-1">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{product.name}</span>
+          <span className="text-foreground font-medium">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+        </div>
+        {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
+          <div key={b.id} className="flex justify-between">
+            <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
+            <span className="text-foreground font-medium">R$ {b.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+        ))}
+        <div className="flex justify-between pt-2 border-t border-border font-bold">
+          <span className="text-foreground">Total</span>
+          <span className="text-primary font-display">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
+        </div>
+      </div>
+
+      {pixCode && (
+        <>
+          <div className="bg-muted rounded-lg p-3 mb-4 break-all text-xs text-muted-foreground text-left font-mono">
+            {pixCode}
+          </div>
+          <button onClick={onCopy} className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2">
+            {copied ? <><Check className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar código PIX</>}
+          </button>
+        </>
+      )}
+
+      {!pixCode && !pixQrCode && (
+        <div className="p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20 mb-4">
+          <p className="text-xs text-neon-yellow font-medium">⏳ Processando pagamento... Aguarde as instruções de pagamento.</p>
+        </div>
+      )}
+
+      <div className="mt-6 p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
+        <p className="text-xs text-neon-yellow font-medium">⏱ O pagamento é confirmado automaticamente em até 5 minutos</p>
+      </div>
+      <p className="text-xs text-muted-foreground mt-4">
+        Após o pagamento, você será redirecionado automaticamente.
+      </p>
+    </div>
+  );
+}
 
 export default Checkout;
