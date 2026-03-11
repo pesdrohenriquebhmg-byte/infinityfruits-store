@@ -23,8 +23,13 @@ const Index = () => {
         <Navbar />
         <HeroBanner />
         <TestimonialsMarquee />
-        <MutationSection products={mutationProducts} />
         <ProductSection
+          id="produtos"
+          title="CONTAS PERM"
+          subtitle="Frutas permanentes com entrega imediata"
+          products={permProducts}
+        />
+        <MutationSection products={mutationProducts} />
           id="produtos"
           title="CONTAS PERM"
           subtitle="Frutas permanentes com entrega imediata"
