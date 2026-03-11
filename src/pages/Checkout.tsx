@@ -120,12 +120,8 @@ const Checkout = () => {
   const pollPaymentStatus = (oid: string) => {
     const interval = setInterval(async () => {
       try {
-        const { data } = await supabase
-          .from('orders')
-          .select('status')
-          .eq('id', oid)
-          .single();
-        if (data?.status === 'paid') {
+        const { data } = await supabase.rpc('get_order_status', { order_id: oid });
+        if (data === 'paid') {
           clearInterval(interval);
           navigate(`/pagamento-confirmado?pedido=${oid}`);
         }
