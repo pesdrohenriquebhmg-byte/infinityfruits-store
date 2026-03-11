@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Shield, Zap, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
