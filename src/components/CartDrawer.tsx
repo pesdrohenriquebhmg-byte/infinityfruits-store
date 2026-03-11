@@ -26,9 +26,9 @@ const CartDrawer = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const handleCheckout = (productId: string) => {
+  const handleCheckout = () => {
     setIsOpen(false);
-    navigate(`/checkout?produto=${productId}`);
+    navigate('/checkout?carrinho=true');
   };
 
   const cartContent = (
