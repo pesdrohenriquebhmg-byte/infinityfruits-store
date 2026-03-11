@@ -35,9 +35,9 @@ export const godhumanProducts: Product[] = [
 ];
 
 export const miticaProducts: Product[] = [
-  { id: 'mitica-1', name: 'Conta 1 Mítica Aleatória', price: 14.90, image: '/images/mitica-1.jpg', badge: 'promo', category: 'mitica', inStock: true },
-  { id: 'mitica-2', name: 'Conta 2 Míticas Aleatórias', price: 24.90, image: '/images/mitica-2.jpg', badge: 'popular', category: 'mitica', inStock: true },
-  { id: 'mitica-3', name: 'Conta 3 Míticas Aleatórias', price: 32.90, image: '/images/mitica-3.jpg', badge: 'rare', category: 'mitica', inStock: true },
+  { id: 'mitica-1', name: 'Conta 1 Mítica Aleatória', price: 9.00, image: '/images/mitica-1.jpg', badge: 'promo', category: 'mitica', inStock: true },
+  { id: 'mitica-2', name: 'Conta 2 Míticas Aleatórias', price: 9.49, image: '/images/mitica-2.jpg', badge: 'popular', category: 'mitica', inStock: true },
+  { id: 'mitica-3', name: 'Conta 3 Míticas Aleatórias', price: 9.99, image: '/images/mitica-3.jpg', badge: 'rare', category: 'mitica', inStock: true },
 ];
 
 export const v4Products: Product[] = [
