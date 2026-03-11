@@ -1,7 +1,10 @@
 import { ShoppingCart } from 'lucide-react';
 import logo from '@/assets/logo-infinity.png';
+import { useCart } from '@/contexts/CartContext';
 
 const Navbar = () => {
+  const { totalItems, setIsOpen } = useCart();
+
   return (
     <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
