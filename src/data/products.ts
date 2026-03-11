@@ -48,12 +48,16 @@ export const v4Products: Product[] = [
 ];
 
 export const fisicaProducts: Product[] = [
-  { id: 'fisica-dragon', name: 'Dragon Física', price: 5.90, image: '/images/dragon-hq.png', badge: 'popular', category: 'fisica', inStock: true },
-  { id: 'fisica-kitsune', name: 'Kitsune Física', price: 6.90, image: '/images/fruta-kitsune.jpg', badge: 'popular', category: 'fisica', inStock: true },
-  { id: 'fisica-control', name: 'Control Física', price: 4.90, image: '/images/control-hq.png', category: 'fisica', inStock: true },
-  { id: 'fisica-spirit', name: 'Spirit Física', price: 4.90, image: '/images/spirit-hq.png', category: 'fisica', inStock: true },
-  { id: 'fisica-venom', name: 'Venom Física', price: 3.90, image: '/images/venom-hq.png', category: 'fisica', inStock: true },
-  { id: 'fisica-buddha', name: 'Buddha Física', price: 2.90, image: '/images/fruta-buddha.jpg', badge: 'promo', category: 'fisica', inStock: true },
+  { id: 'fisica-dragon', name: 'Dragon Física', price: 11.80, image: '/images/fruta-dragon.webp', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-kitsune', name: 'Kitsune Física', price: 11.90, image: '/images/fruta-kitsune.webp', badge: 'popular', category: 'fisica', inStock: true },
+  { id: 'fisica-control', name: 'Control Física', price: 11.70, image: '/images/fruta-control.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-dough', name: 'Dough Física', price: 11.10, image: '/images/fruta-dough.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-trex', name: 'T-Rex Física', price: 11.40, image: '/images/fruta-trex.png', category: 'fisica', inStock: true },
+  { id: 'fisica-portal', name: 'Portal Física', price: 9.90, image: '/images/fruta-portal.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-buddha', name: 'Buddha Física', price: 9.90, image: '/images/fruta-buddha.webp', badge: 'promo', category: 'fisica', inStock: true },
+  { id: 'fisica-tiger', name: 'Tiger Física', price: 11.60, image: '/images/fruta-tiger.webp', badge: 'rare', category: 'fisica', inStock: true },
+  { id: 'fisica-yeti', name: 'Yeti Física', price: 11.00, image: '/images/fruta-yeti.webp', category: 'fisica', inStock: true },
+  { id: 'fisica-mammoth', name: 'Mammoth Física', price: 11.20, image: '/images/fruta-mammoth.webp', category: 'fisica', inStock: true },
 ];
 
 export const allProducts: Product[] = [
