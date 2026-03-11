@@ -25,8 +25,9 @@ const App = () => (
           <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
           <Route path="/ofertas-especiais" element={<SpecialOffers />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

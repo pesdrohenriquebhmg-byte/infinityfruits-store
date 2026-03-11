@@ -60,12 +60,21 @@ const ProductCard = ({ product }: { product: Product }) => {
             À vista no Pix
           </p>
           {product.inStock ? (
-            <button
-              onClick={() => navigate(`/checkout?produto=${product.id}`)}
-              className="btn-neon w-full text-sm py-2.5"
-            >
-              Comprar agora
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/checkout?produto=${product.id}`)}
+                className="btn-neon flex-1 text-sm py-2.5"
+              >
+                Comprar
+              </button>
+              <button
+                onClick={() => addItem(product)}
+                className="w-10 rounded-lg bg-card border border-primary/30 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all"
+                title="Adicionar ao carrinho"
+              >
+                <ShoppingCart className="w-4 h-4 text-primary" />
+              </button>
+            </div>
           ) : (
             <button className="w-full py-2.5 rounded-lg bg-muted text-muted-foreground font-display text-sm font-bold uppercase cursor-not-allowed">
               Esgotado
