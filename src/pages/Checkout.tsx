@@ -348,7 +348,6 @@ function PixStep({ product, totalPrice, selectedBumps, pixCode, pixQrCode, copie
   copied: boolean;
   onCopy: () => void;
 }) {
-  const { Copy } = require('lucide-react');
   return (
     <div className="card-gamer p-6 text-center">
       <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neon-green/10 flex items-center justify-center">
