@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Copy, Check, Shield, Zap, Clock } from 'lucide-react';
-import { allProducts } from '@/data/products';
+import { ArrowLeft, Copy, Check, Shield, Zap, Clock, Plus, X } from 'lucide-react';
+import { allProducts, orderBumpProducts, type OrderBump } from '@/data/products';
 import { z } from 'zod';
 
 const customerSchema = z.object({
@@ -19,6 +19,7 @@ const Checkout = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'form' | 'pix'>('form');
   const [copied, setCopied] = useState(false);
+  const [selectedBumps, setSelectedBumps] = useState<Set<string>>(new Set());
 
   const pixCode = '00020126580014br.gov.bcb.pix0136abc12345-defg-6789-hijk-lmnopqrstuv5204000053039865802BR5925SUPER BUY DIGITAL LTDA6009SAO PAULO62070503***6304ABCD';
 
@@ -32,6 +33,21 @@ const Checkout = () => {
       </div>
     );
   }
+
+  const toggleBump = (id: string) => {
+    setSelectedBumps(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const bumpsTotal = orderBumpProducts
+    .filter(b => selectedBumps.has(b.id))
+    .reduce((sum, b) => sum + b.price, 0);
+
+  const totalPrice = product.price + bumpsTotal;
 
   const handleSubmit = () => {
     const result = customerSchema.safeParse(form);
@@ -78,6 +94,61 @@ const Checkout = () => {
             R$ {product.price.toFixed(2).replace('.', ',')}
           </span>
         </div>
+
+        {/* Order Bumps */}
+        {step === 'form' && (
+          <div className="card-gamer p-4 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-lg">🎮</span>
+              <h3 className="font-display text-sm font-bold text-foreground">Adicione Gamepasses ao seu pedido</h3>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {orderBumpProducts.map((bump) => {
+                const isSelected = selectedBumps.has(bump.id);
+                return (
+                  <button
+                    key={bump.id}
+                    onClick={() => toggleBump(bump.id)}
+                    className={`relative rounded-xl border-2 p-2 text-left transition-all duration-200 ${
+                      isSelected
+                        ? 'border-primary bg-primary/5 shadow-[0_0_15px_hsl(var(--primary)/0.2)]'
+                        : 'border-border bg-muted/30 hover:border-muted-foreground/30'
+                    }`}
+                  >
+                    {isSelected && (
+                      <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-3 h-3 text-primary-foreground" />
+                      </div>
+                    )}
+                    <img
+                      src={bump.image}
+                      alt={bump.name}
+                      className="w-full aspect-video object-cover rounded-lg mb-2"
+                      loading="lazy"
+                    />
+                    <p className="text-xs font-bold text-foreground leading-tight mb-1">
+                      {bump.emoji} {bump.name.replace(' (Gamepass)', '')}
+                    </p>
+                    <p className="font-display text-sm font-black text-primary">
+                      + R$ {bump.price.toFixed(2).replace('.', ',')}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedBumps.size > 0 && (
+              <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {selectedBumps.size} gamepass{selectedBumps.size > 1 ? 'es' : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
+                </span>
+                <span className="font-display text-sm font-bold text-primary">
+                  + R$ {bumpsTotal.toFixed(2).replace('.', ',')}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {step === 'form' ? (
           <div className="card-gamer p-6">
@@ -136,7 +207,7 @@ const Checkout = () => {
             </div>
 
             <button onClick={handleSubmit} className="btn-neon w-full text-sm py-3">
-              Gerar PIX · R$ {product.price.toFixed(2).replace('.', ',')}
+              Gerar PIX · R$ {totalPrice.toFixed(2).replace('.', ',')}
             </button>
           </div>
         ) : (
@@ -145,7 +216,25 @@ const Checkout = () => {
               <img src="https://cdn.centralcart.io/public/gateway-icons/icon-pix.svg" alt="PIX" className="w-8 h-8" />
             </div>
             <h3 className="font-display text-lg font-bold text-foreground mb-2">Pague com PIX</h3>
-            <p className="text-sm text-muted-foreground mb-6">Copie o código abaixo e pague no app do seu banco</p>
+            <p className="text-sm text-muted-foreground mb-4">Copie o código abaixo e pague no app do seu banco</p>
+
+            {/* Order summary */}
+            <div className="bg-muted/50 rounded-lg p-3 mb-4 text-left text-xs space-y-1">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{product.name}</span>
+                <span className="text-foreground font-medium">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+              </div>
+              {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
+                <div key={b.id} className="flex justify-between">
+                  <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
+                  <span className="text-foreground font-medium">R$ {b.price.toFixed(2).replace('.', ',')}</span>
+                </div>
+              ))}
+              <div className="flex justify-between pt-2 border-t border-border font-bold">
+                <span className="text-foreground">Total</span>
+                <span className="text-primary font-display">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
+              </div>
+            </div>
 
             <div className="bg-muted rounded-lg p-3 mb-4 break-all text-xs text-muted-foreground text-left font-mono">
               {pixCode}
