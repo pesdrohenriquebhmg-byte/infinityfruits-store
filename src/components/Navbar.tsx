@@ -6,10 +6,10 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <img src={logo} alt="Super Buy" className="w-8 h-8" />
+          <img src={logo} alt="INFINITY FRUITS" className="w-10 h-10" />
           <div>
-            <span className="font-display text-sm font-bold text-foreground">SUPER </span>
-            <span className="font-display text-sm font-bold text-primary">BUY</span>
+            <span className="font-display text-sm font-bold text-sky-400">INFINITY </span>
+            <span className="font-display text-sm font-bold text-yellow-400">FRUITS</span>
           </div>
         </a>
         <div className="flex items-center gap-4">

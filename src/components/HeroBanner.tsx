@@ -29,8 +29,8 @@ const HeroBanner = () => {
         </div>
 
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-2 tracking-tight leading-none">
-          <span className="text-foreground drop-shadow-[0_0_20px_hsl(0,0%,100%,0.1)]">SUPER</span>
-          <span className="text-primary glow-text-cyan ml-3 md:ml-4"> BUY</span>
+          <span className="text-sky-400 drop-shadow-[0_0_20px_hsl(200,80%,60%,0.4)]">INFINITY</span>
+          <span className="text-yellow-400 drop-shadow-[0_0_20px_hsl(50,80%,50%,0.4)] ml-3 md:ml-4"> FRUITS</span>
         </h1>
         
         <div className="flex items-center justify-center gap-3 mb-6">
