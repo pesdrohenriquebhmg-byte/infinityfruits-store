@@ -16,6 +16,7 @@ export const permProducts: Product[] = [
   { id: 'trex', name: 'Conta T-Rex PERM', price: 15.90, image: '/images/trex-hq.png', category: 'perm', inStock: true },
   { id: 'portal', name: 'Conta Portal PERM', price: 9.90, image: '/images/portal-hq.png', category: 'perm', inStock: true },
   { id: 'buddha', name: 'Conta Buddha PERM', price: 9.90, image: '/images/buddha-hq.png', badge: 'popular', category: 'perm', inStock: true },
+  { id: 'tiger', name: 'Conta Tiger PERM', price: 19.90, image: '/images/dragon-hq.png', badge: 'rare', category: 'perm', inStock: true },
   { id: 'yeti', name: 'Conta Yeti PERM', price: 21.90, image: '/images/yeti-hq.png', category: 'perm', inStock: true },
   { id: 'mammoth', name: 'Conta Mammoth PERM', price: 14.90, image: '/images/mammoth-hq.png', category: 'perm', inStock: true },
   { id: 'venom', name: 'Conta Venom PERM', price: 12.90, image: '/images/venom-hq.png', badge: 'popular', category: 'perm', inStock: true },
