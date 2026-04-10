@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
     const buckpayId = data.id;
     const status = data.status;
     const netAmount = data.net_amount;
+    const pixCode = data.pix_code;
 
     if (!buckpayId || !status) {
       return new Response(
