@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       .insert({
         external_id: externalId,
         product_id: `priority-${original_order_id}`,
-        product_name: "Entrega Prioritária",
+        product_name: "Entrega Automática Imediata",
         amount: amountCents,
         total_amount: amountCents,
         buyer_name,
@@ -72,11 +72,11 @@ Deno.serve(async (req) => {
       },
       product: {
         id: `priority-${original_order_id}`,
-        name: "Entrega Prioritária",
+        name: "Entrega Automática Imediata",
       },
       offer: {
         id: `offer-priority-${original_order_id}`,
-        name: "Entrega Prioritária",
+        name: "Entrega Automática Imediata",
         quantity: 1,
       },
       postbackUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/buckpay-webhook`,
