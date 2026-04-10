@@ -306,7 +306,9 @@ const PaymentSuccess = () => {
           {choice === 'priority' ? '⚡ Prioridade ativada!' : '✅ Pedido registrado!'}
         </h1>
         <p className="text-muted-foreground text-xs md:text-sm mb-6 leading-relaxed">
-          Nosso suporte já foi notificado sobre o seu pedido. Para garantir sua entrega, entre em contato através de um dos canais abaixo:
+          {choice === 'priority'
+            ? 'Sua prioridade foi confirmada! Agora, entre em contato pelo WhatsApp ou Discord e envie os dois comprovantes de pagamento (produto principal + taxa de prioridade) para garantir sua entrega acelerada:'
+            : 'Nosso suporte já foi notificado sobre o seu pedido. Para garantir sua entrega, entre em contato através de um dos canais abaixo:'}
         </p>
 
         {orderId && (
