@@ -126,7 +126,6 @@ const Checkout = () => {
       setStep('pix');
 
       // Save buyer info for priority payment upsell
-      const phone = form.whatsapp.replace(/\D/g, '');
       localStorage.setItem('checkout_buyer', JSON.stringify({
         name: form.name,
         email: form.email,
