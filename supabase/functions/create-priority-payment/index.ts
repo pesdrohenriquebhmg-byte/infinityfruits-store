@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
         name: "Entrega Automática Imediata",
         quantity: 1,
       },
-      postbackUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/buckpay-webhook`,
+      postbackUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/buckpay-webhook?token=${BUCKPAY_SECRET}`,
     };
 
     console.log("Calling Buckpay for priority:", JSON.stringify(buckpayPayload));
