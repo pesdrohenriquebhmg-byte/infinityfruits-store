@@ -56,15 +56,7 @@ const PaymentSuccess = () => {
   const handlePriorityPayment = async () => {
     const buyer = getBuyerInfo();
     if (!buyer) {
-      // Fallback: go to confirmed step with support instructions
-      setChoice('priority');
-      localStorage.setItem('delivery_preference', JSON.stringify({
-        orderId,
-        choice: 'priority',
-        paid: false,
-        timestamp: new Date().toISOString(),
-      }));
-      setStep('confirmed');
+      setError('Dados do comprador não encontrados. Tente fazer a compra novamente.');
       return;
     }
 
