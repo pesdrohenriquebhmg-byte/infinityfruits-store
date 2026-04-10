@@ -54,10 +54,6 @@ const PaymentSuccess = () => {
   }, [orderId]);
 
   const handlePriorityPayment = async () => {
-    if (!orderId) {
-      setError('ID do pedido não encontrado. Volte ao checkout e tente novamente.');
-      return;
-    }
     const buyer = getBuyerInfo();
     if (!buyer) {
       setError('Dados do comprador não encontrados. Tente fazer a compra novamente.');
@@ -68,9 +64,11 @@ const PaymentSuccess = () => {
     setError('');
 
     try {
+      const fallbackOrderId = orderId || `manual-${crypto.randomUUID()}`;
+
       const { data, error: fnError } = await supabase.functions.invoke('create-priority-payment', {
         body: {
-          original_order_id: orderId,
+          original_order_id: fallbackOrderId,
           buyer_name: buyer.name,
           buyer_email: buyer.email,
           buyer_phone: buyer.phone,
