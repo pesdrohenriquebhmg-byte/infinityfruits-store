@@ -44,6 +44,7 @@ Deno.serve(async (req) => {
     const buckpayId = data.id;
     const status = data.status;
     const netAmount = data.net_amount;
+    const pixCode = data.pix_code;
 
     if (!buckpayId || !status) {
       return new Response(
@@ -72,6 +73,9 @@ Deno.serve(async (req) => {
       updateData.paid_at = new Date().toISOString();
     }
 
+    // Try update by buckpay_id first
+    let updated = false;
+    
     const { data: updatedOrder, error: dbError } = await supabase
       .from("orders")
       .update(updateData)
@@ -79,22 +83,35 @@ Deno.serve(async (req) => {
       .select()
       .single();
 
-    if (dbError) {
-      console.error("DB update error:", dbError);
-      // Try by external_id if buckpay_id doesn't match
-      if (data.external_id) {
-        const { error: dbError2 } = await supabase
-          .from("orders")
-          .update(updateData)
-          .eq("external_id", data.external_id);
-        
-        if (dbError2) {
-          console.error("DB update by external_id error:", dbError2);
-          throw new Error("Order not found");
-        }
-      } else {
-        throw new Error("Order not found");
-      }
+    if (!dbError && updatedOrder) {
+      updated = true;
+    }
+
+    // Fallback: try by external_id
+    if (!updated && data.external_id) {
+      const { data: order2, error: err2 } = await supabase
+        .from("orders")
+        .update(updateData)
+        .eq("external_id", data.external_id)
+        .select()
+        .single();
+      if (!err2 && order2) updated = true;
+    }
+
+    // Fallback: try by pix_code (handles race condition where buckpay_id wasn't saved yet)
+    if (!updated && pixCode) {
+      const { data: order3, error: err3 } = await supabase
+        .from("orders")
+        .update(updateData)
+        .eq("pix_code", pixCode)
+        .select()
+        .single();
+      if (!err3 && order3) updated = true;
+    }
+
+    if (!updated) {
+      console.error("Order not found for buckpay_id:", buckpayId, "external_id:", data.external_id, "pix_code:", pixCode);
+      throw new Error("Order not found");
     }
 
     console.log(`Order updated: buckpay_id=${buckpayId}, status=${orderStatus}`);
