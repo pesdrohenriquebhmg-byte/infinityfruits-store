@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle } from 'lucide-react';
+import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle, Copy, Check, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-type Step = 'demand' | 'confirmed';
+type Step = 'demand' | 'priority-pix' | 'confirmed';
 
 const PaymentSuccess = () => {
   const [params] = useSearchParams();
@@ -10,14 +11,112 @@ const PaymentSuccess = () => {
   const [step, setStep] = useState<Step>('demand');
   const [choice, setChoice] = useState<'priority' | 'standard' | null>(null);
 
-  const handleChoice = (selected: 'priority' | 'standard') => {
-    setChoice(selected);
+  // Priority payment state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [pixCode, setPixCode] = useState('');
+  const [pixQrCode, setPixQrCode] = useState('');
+  const [priorityOrderId, setPriorityOrderId] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [priorityPaid, setPriorityPaid] = useState(false);
+
+  // Retrieve buyer info from the original order's localStorage or fallback
+  const getBuyerInfo = () => {
+    try {
+      const stored = localStorage.getItem('checkout_buyer');
+      if (stored) return JSON.parse(stored);
+    } catch { /* ignore */ }
+    return null;
+  };
+
+  const pollPriorityStatus = useCallback((oid: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await supabase.rpc('get_order_status', { order_id: oid });
+        if (data === 'paid') {
+          clearInterval(interval);
+          setPriorityPaid(true);
+          setTimeout(() => {
+            setChoice('priority');
+            localStorage.setItem('delivery_preference', JSON.stringify({
+              orderId,
+              choice: 'priority',
+              paid: true,
+              timestamp: new Date().toISOString(),
+            }));
+            setStep('confirmed');
+          }, 1500);
+        }
+      } catch { /* ignore */ }
+    }, 5000);
+    setTimeout(() => clearInterval(interval), 30 * 60 * 1000);
+    return interval;
+  }, [orderId]);
+
+  const handlePriorityPayment = async () => {
+    const buyer = getBuyerInfo();
+    if (!buyer) {
+      // Fallback: go to confirmed step with support instructions
+      setChoice('priority');
+      localStorage.setItem('delivery_preference', JSON.stringify({
+        orderId,
+        choice: 'priority',
+        paid: false,
+        timestamp: new Date().toISOString(),
+      }));
+      setStep('confirmed');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('create-priority-payment', {
+        body: {
+          original_order_id: orderId,
+          buyer_name: buyer.name,
+          buyer_email: buyer.email,
+          buyer_phone: buyer.phone,
+        },
+      });
+
+      if (fnError) throw fnError;
+      if (data?.error) throw new Error(data.error);
+
+      setPriorityOrderId(data.order_id);
+      setPixCode(data.pix_code || '');
+      setPixQrCode(data.pix_qr_code || '');
+      setStep('priority-pix');
+
+      if (data.order_id) {
+        pollPriorityStatus(data.order_id);
+      }
+    } catch (err: unknown) {
+      console.error('Priority payment error:', err);
+      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStandard = () => {
+    setChoice('standard');
     localStorage.setItem('delivery_preference', JSON.stringify({
       orderId,
-      choice: selected,
+      choice: 'standard',
       timestamp: new Date().toISOString(),
     }));
     setStep('confirmed');
+  };
+
+  const handleCopy = () => {
+    if (pixCode) {
+      navigator.clipboard.writeText(pixCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   // Step 1: High demand + priority upsell
@@ -41,10 +140,17 @@ const PaymentSuccess = () => {
             </p>
           </div>
 
+          {error && (
+            <div className="mb-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+              <p className="text-xs text-destructive font-medium">{error}</p>
+            </div>
+          )}
+
           {/* Priority option */}
           <button
-            onClick={() => handleChoice('priority')}
-            className="w-full text-left card-gamer p-5 mb-3 border-2 border-primary/40 hover:border-primary transition-colors group relative overflow-hidden"
+            onClick={handlePriorityPayment}
+            disabled={loading}
+            className="w-full text-left card-gamer p-5 mb-3 border-2 border-primary/40 hover:border-primary transition-colors group relative overflow-hidden disabled:opacity-70"
           >
             <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors" />
             <div className="relative">
@@ -71,16 +177,26 @@ const PaymentSuccess = () => {
                 ))}
               </div>
               <div className="btn-neon w-full text-xs md:text-sm py-3 flex items-center justify-center gap-2 font-bold">
-                QUERO RECEBER MAIS RÁPIDO
-                <Zap className="w-4 h-4" />
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Gerando PIX...
+                  </>
+                ) : (
+                  <>
+                    QUERO RECEBER MAIS RÁPIDO
+                    <Zap className="w-4 h-4" />
+                  </>
+                )}
               </div>
             </div>
           </button>
 
           {/* Standard option */}
           <button
-            onClick={() => handleChoice('standard')}
-            className="w-full text-left card-gamer p-4 border border-border hover:border-muted-foreground/30 transition-colors"
+            onClick={handleStandard}
+            disabled={loading}
+            className="w-full text-left card-gamer p-4 border border-border hover:border-muted-foreground/30 transition-colors disabled:opacity-50"
           >
             <div className="flex items-center gap-2 mb-1">
               <Clock className="w-4 h-4 text-muted-foreground" />
@@ -100,7 +216,89 @@ const PaymentSuccess = () => {
     );
   }
 
-  // Step 2: Confirmation + support channels + upsells link
+  // Step 2: Priority PIX payment
+  if (step === 'priority-pix') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          {priorityPaid ? (
+            <div className="text-center">
+              <div className="relative mb-6">
+                <div className="w-20 h-20 mx-auto rounded-full bg-neon-green/10 flex items-center justify-center animate-pulse">
+                  <CheckCircle className="w-10 h-10 text-neon-green" />
+                </div>
+              </div>
+              <h2 className="font-display text-xl font-black text-foreground mb-2">
+                ⚡ Pagamento confirmado!
+              </h2>
+              <p className="text-muted-foreground text-sm">Redirecionando...</p>
+            </div>
+          ) : (
+            <>
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="font-display text-xl md:text-2xl font-black text-foreground mb-2">
+                  ⚡ Entrega Prioritária
+                </h2>
+                <p className="text-muted-foreground text-xs md:text-sm">
+                  Pague <span className="text-primary font-bold">R$ 9,99</span> via PIX para ativar a prioridade
+                </p>
+              </div>
+
+              <div className="card-gamer p-6 text-center">
+                {pixQrCode && (
+                  <div className="mb-4">
+                    <img src={pixQrCode} alt="QR Code PIX" className="mx-auto w-48 h-48 rounded-lg" />
+                  </div>
+                )}
+
+                {pixCode && (
+                  <>
+                    <div className="bg-muted/50 rounded-lg p-3 mb-4">
+                      <p className="text-xs text-muted-foreground mb-1">Código PIX copia e cola:</p>
+                      <p className="text-xs font-mono text-foreground break-all leading-relaxed">{pixCode}</p>
+                    </div>
+                    <button
+                      onClick={handleCopy}
+                      className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2 mb-4"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          Copiar código PIX
+                        </>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Aguardando pagamento...
+                </div>
+              </div>
+
+              <button
+                onClick={handleStandard}
+                className="w-full mt-4 text-center text-xs py-2.5 rounded-xl border border-border text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancelar e usar entrega padrão
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Step 3: Confirmation + support channels + upsells link
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
@@ -130,10 +328,10 @@ const PaymentSuccess = () => {
           <div className="card-gamer p-4 mb-5 border border-primary/30">
             <div className="flex items-center gap-2 mb-1">
               <Zap className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary">Entrega Prioritária</span>
+              <span className="text-xs font-bold text-primary">Entrega Prioritária Ativada</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Você selecionou a entrega prioritária. Informe ao suporte para processar o pagamento da taxa de R$9,99.
+              Sua entrega prioritária foi confirmada. Seu pedido será processado com prioridade máxima!
             </p>
           </div>
         )}
