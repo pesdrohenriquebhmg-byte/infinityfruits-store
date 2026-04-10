@@ -125,6 +125,14 @@ const Checkout = () => {
       setPixQrCode(data.pix_qr_code || '');
       setStep('pix');
 
+      // Save buyer info for priority payment upsell
+      const phone = form.whatsapp.replace(/\D/g, '');
+      localStorage.setItem('checkout_buyer', JSON.stringify({
+        name: form.name,
+        email: form.email,
+        phone,
+      }));
+
       if (isCartMode) cart.clearCart();
 
       if (data.order_id) {
