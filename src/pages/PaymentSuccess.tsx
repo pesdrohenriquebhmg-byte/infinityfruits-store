@@ -157,13 +157,13 @@ const PaymentSuccess = () => {
                 </div>
               </div>
               <h3 className="font-display text-base md:text-lg font-bold text-foreground mb-1">
-                ⚡ Entrega prioritária
+                ⚡ Entrega Automática Imediata
               </h3>
               <p className="text-xs text-muted-foreground mb-3">
-                Receba seu produto com prioridade na fila pagando uma taxa única de <span className="text-primary font-bold">R$9,99</span>.
+                Receba seu produto de forma automática e imediata pagando uma taxa única de <span className="text-primary font-bold">R$9,99</span>.
               </p>
               <div className="space-y-1.5 mb-4">
-                {['Atendimento prioritário', 'Entrega muito mais rápida', 'Suporte acelerado'].map((b) => (
+                {['Recebimento automático', 'Entrega imediata', 'Suporte acelerado'].map((b) => (
                   <div key={b} className="flex items-center gap-2">
                     <CheckCircle className="w-3.5 h-3.5 text-neon-green shrink-0" />
                     <span className="text-xs text-foreground/80">{b}</span>
@@ -234,10 +234,10 @@ const PaymentSuccess = () => {
                   <Zap className="w-8 h-8 text-primary" />
                 </div>
                 <h2 className="font-display text-xl md:text-2xl font-black text-foreground mb-2">
-                  ⚡ Entrega Prioritária
+                  ⚡ Entrega Automática Imediata
                 </h2>
                 <p className="text-muted-foreground text-xs md:text-sm">
-                  Pague <span className="text-primary font-bold">R$ 9,99</span> via PIX para ativar a prioridade
+                  Pague <span className="text-primary font-bold">R$ 9,99</span> via PIX para receber automaticamente
                 </p>
               </div>
 
@@ -324,10 +324,10 @@ const PaymentSuccess = () => {
           <div className="card-gamer p-4 mb-5 border border-primary/30">
             <div className="flex items-center gap-2 mb-2">
               <Zap className="w-4 h-4 text-primary" />
-              <span className="text-xs font-bold text-primary">Entrega Prioritária Ativada</span>
+              <span className="text-xs font-bold text-primary">Entrega Automática Imediata Ativada</span>
             </div>
             <p className="text-xs text-muted-foreground mb-3">
-              Seu pedido será processado com prioridade máxima!
+              Seu pedido será processado e entregue automaticamente!
             </p>
             <div className="bg-neon-yellow/5 border border-neon-yellow/20 rounded-lg p-3">
               <p className="text-xs font-bold text-neon-yellow mb-1">⚠️ Importante:</p>
