@@ -7,7 +7,7 @@ type Step = 'demand' | 'priority-pix' | 'confirmed';
 
 const PaymentSuccess = () => {
   const [params] = useSearchParams();
-  const orderId = params.get('pedido');
+  const orderId = params.get('pedido') || localStorage.getItem('checkout_order_id');
   const [step, setStep] = useState<Step>('demand');
   const [choice, setChoice] = useState<'priority' | 'standard' | null>(null);
 
