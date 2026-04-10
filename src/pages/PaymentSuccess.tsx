@@ -1,77 +1,180 @@
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle, ArrowRight, MessageCircle } from 'lucide-react';
+import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle } from 'lucide-react';
+
+type Step = 'demand' | 'confirmed';
 
 const PaymentSuccess = () => {
   const [params] = useSearchParams();
   const orderId = params.get('pedido');
+  const [step, setStep] = useState<Step>('demand');
+  const [choice, setChoice] = useState<'priority' | 'standard' | null>(null);
 
+  const handleChoice = (selected: 'priority' | 'standard') => {
+    setChoice(selected);
+    localStorage.setItem('delivery_preference', JSON.stringify({
+      orderId,
+      choice: selected,
+      timestamp: new Date().toISOString(),
+    }));
+    setStep('confirmed');
+  };
+
+  // Step 1: High demand + priority upsell
+  if (step === 'demand') {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-lg w-full">
+          {/* Alert header */}
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 mx-auto rounded-full bg-neon-yellow/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-8 h-8 text-neon-yellow" />
+            </div>
+            <h1 className="font-display text-xl md:text-2xl font-black text-foreground">
+              🚨 Alta demanda na loja
+            </h1>
+            <p className="text-muted-foreground text-xs md:text-sm mt-3 leading-relaxed max-w-md mx-auto">
+              Devido ao alto volume de pedidos recentes, nossa equipe está com uma fila de entregas em andamento.
+            </p>
+            <p className="text-muted-foreground text-xs md:text-sm mt-2 leading-relaxed max-w-md mx-auto">
+              Para manter a qualidade e segurança das entregas, implementamos um <span className="text-foreground font-semibold">sistema de prioridade</span>:
+            </p>
+          </div>
+
+          {/* Priority option */}
+          <button
+            onClick={() => handleChoice('priority')}
+            className="w-full text-left card-gamer p-5 mb-3 border-2 border-primary/40 hover:border-primary transition-colors group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">Recomendado</span>
+                </div>
+              </div>
+              <h3 className="font-display text-base md:text-lg font-bold text-foreground mb-1">
+                ⚡ Entrega prioritária
+              </h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Receba seu produto com prioridade na fila pagando uma taxa única de <span className="text-primary font-bold">R$9,99</span>.
+              </p>
+              <div className="space-y-1.5 mb-4">
+                {['Atendimento prioritário', 'Entrega muito mais rápida', 'Suporte acelerado'].map((b) => (
+                  <div key={b} className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-neon-green shrink-0" />
+                    <span className="text-xs text-foreground/80">{b}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="btn-neon w-full text-xs md:text-sm py-3 flex items-center justify-center gap-2 font-bold">
+                QUERO RECEBER MAIS RÁPIDO
+                <Zap className="w-4 h-4" />
+              </div>
+            </div>
+          </button>
+
+          {/* Standard option */}
+          <button
+            onClick={() => handleChoice('standard')}
+            className="w-full text-left card-gamer p-4 border border-border hover:border-muted-foreground/30 transition-colors"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <h3 className="font-display text-sm font-bold text-muted-foreground">
+                ⏳ Entrega padrão (gratuita)
+              </h3>
+            </div>
+            <p className="text-xs text-muted-foreground/70 mb-3">
+              Seu pedido será entregue em até <span className="font-semibold text-muted-foreground">30 dias úteis</span>, respeitando a ordem da fila.
+            </p>
+            <div className="w-full text-center text-xs py-2.5 rounded-xl border border-border text-muted-foreground hover:text-foreground transition-colors">
+              POSSO AGUARDAR
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Confirmation + support channels + upsells link
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
-        {/* Success animation */}
-        <div className="relative mb-8">
-          <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-neon-green/10 flex items-center justify-center animate-pulse">
-            <CheckCircle className="w-10 h-10 md:w-14 md:h-14 text-neon-green" />
+        {/* Success icon */}
+        <div className="relative mb-6">
+          <div className="w-20 h-20 mx-auto rounded-full bg-neon-green/10 flex items-center justify-center animate-pulse">
+            <CheckCircle className="w-10 h-10 text-neon-green" />
           </div>
-          <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full border-2 border-neon-green/30 animate-ping" />
+          <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full border-2 border-neon-green/30 animate-ping" />
         </div>
 
-        <h1 className="font-display text-xl md:text-3xl font-black text-foreground mb-3">
-          Pagamento Confirmado! 🎉
+        <h1 className="font-display text-xl md:text-2xl font-black text-foreground mb-2">
+          {choice === 'priority' ? '⚡ Prioridade ativada!' : '✅ Pedido registrado!'}
         </h1>
-        <p className="text-muted-foreground text-xs md:text-sm mb-6 md:mb-8">
-          Seu pedido foi processado com sucesso. Você receberá os dados da conta no seu e-mail e WhatsApp em instantes.
+        <p className="text-muted-foreground text-xs md:text-sm mb-6 leading-relaxed">
+          Nosso suporte já foi notificado sobre o seu pedido. Para garantir sua entrega, entre em contato através de um dos canais abaixo:
         </p>
 
         {orderId && (
-          <div className="card-gamer p-4 mb-6 text-left">
+          <div className="card-gamer p-4 mb-5 text-left">
             <p className="text-xs text-muted-foreground mb-1">ID do pedido</p>
             <p className="text-xs md:text-sm font-mono text-foreground break-all">{orderId}</p>
           </div>
         )}
 
-        <div className="card-gamer p-4 md:p-5 mb-6 text-left space-y-3">
-          <h3 className="font-display text-sm font-bold text-foreground">📋 Próximos passos</h3>
-          <div className="flex items-start gap-3">
-            <span className="text-neon-green font-bold text-sm mt-0.5">1.</span>
-            <p className="text-xs text-muted-foreground">Verifique seu e-mail e WhatsApp para receber os dados da conta.</p>
+        {choice === 'priority' && (
+          <div className="card-gamer p-4 mb-5 border border-primary/30">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="w-4 h-4 text-primary" />
+              <span className="text-xs font-bold text-primary">Entrega Prioritária</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Você selecionou a entrega prioritária. Informe ao suporte para processar o pagamento da taxa de R$9,99.
+            </p>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="text-neon-green font-bold text-sm mt-0.5">2.</span>
-            <p className="text-xs text-muted-foreground">Faça login no Blox Fruits com os dados recebidos.</p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-neon-green font-bold text-sm mt-0.5">3.</span>
-            <p className="text-xs text-muted-foreground">Aproveite sua conta! Em caso de dúvidas, fale com nosso suporte.</p>
-          </div>
+        )}
+
+        {/* Support buttons */}
+        <div className="flex gap-3 mb-5">
+          <a
+            href="https://wa.me/553131578354?text=Olá! Preciso de suporte sobre meu pedido"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 btn-neon py-3 flex items-center justify-center gap-2 text-xs md:text-sm font-bold"
+          >
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp
+          </a>
+          <a
+            href="https://discord.gg/KXTTMRhgJ8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-xs md:text-sm text-muted-foreground hover:text-foreground hover:border-accent/50 transition-colors font-bold"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+            Discord
+          </a>
         </div>
 
-        {/* Upsell CTA */}
+        {/* Existing upsell CTA */}
         <Link
           to={`/ofertas-especiais?pedido=${orderId || ''}`}
-          className="btn-neon w-full text-xs md:text-sm py-3 flex items-center justify-center gap-2 mb-4"
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent/10 border border-accent/30 text-xs md:text-sm text-accent hover:bg-accent/20 transition-colors font-bold mb-4"
         >
           🎁 Ver ofertas exclusivas
           <ArrowRight className="w-4 h-4" />
         </Link>
 
-        <div className="flex gap-3">
-          <a
-            href="https://wa.me/553131578354?text=Olá! Preciso de suporte sobre meu pedido"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-xs md:text-sm text-muted-foreground hover:text-foreground hover:border-neon-green/50 transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Suporte
-          </a>
-          <Link
-            to="/"
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-xs md:text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
-          >
-            Voltar à loja
-          </Link>
-        </div>
+        <Link
+          to="/"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+        >
+          Voltar à loja
+        </Link>
       </div>
     </div>
   );
