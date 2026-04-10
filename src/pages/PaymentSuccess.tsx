@@ -320,13 +320,29 @@ const PaymentSuccess = () => {
 
         {choice === 'priority' && (
           <div className="card-gamer p-4 mb-5 border border-primary/30">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-2">
               <Zap className="w-4 h-4 text-primary" />
               <span className="text-xs font-bold text-primary">Entrega Prioritária Ativada</span>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Sua entrega prioritária foi confirmada. Seu pedido será processado com prioridade máxima!
+            <p className="text-xs text-muted-foreground mb-3">
+              Seu pedido será processado com prioridade máxima!
             </p>
+            <div className="bg-neon-yellow/5 border border-neon-yellow/20 rounded-lg p-3">
+              <p className="text-xs font-bold text-neon-yellow mb-1">⚠️ Importante:</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Ao entrar em contato, envie os <span className="text-foreground font-semibold">dois comprovantes de pagamento</span>:
+              </p>
+              <ul className="text-xs text-muted-foreground mt-1.5 space-y-1">
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3 h-3 text-neon-green shrink-0" />
+                  Comprovante do produto principal
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3 h-3 text-neon-green shrink-0" />
+                  Comprovante da taxa de prioridade (R$ 9,99)
+                </li>
+              </ul>
+            </div>
           </div>
         )}
 
