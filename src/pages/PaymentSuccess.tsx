@@ -54,6 +54,10 @@ const PaymentSuccess = () => {
   }, [orderId]);
 
   const handlePriorityPayment = async () => {
+    if (!orderId) {
+      setError('ID do pedido não encontrado. Volte ao checkout e tente novamente.');
+      return;
+    }
     const buyer = getBuyerInfo();
     if (!buyer) {
       setError('Dados do comprador não encontrados. Tente fazer a compra novamente.');
