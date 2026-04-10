@@ -125,12 +125,13 @@ const Checkout = () => {
       setPixQrCode(data.pix_qr_code || '');
       setStep('pix');
 
-      // Save buyer info for priority payment upsell
+      // Save buyer info and order ID for priority payment upsell
       localStorage.setItem('checkout_buyer', JSON.stringify({
         name: form.name,
         email: form.email,
         phone,
       }));
+      localStorage.setItem('checkout_order_id', data.order_id);
 
       if (isCartMode) cart.clearCart();
 
