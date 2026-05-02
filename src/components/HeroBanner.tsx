@@ -64,7 +64,7 @@ const HeroBanner = () => {
             Ver Contas
           </a>
           <a
-            href="https://wa.me/553131578354?text=Olá! Gostaria de comprar contas Blox Fruits"
+            href="https://wa.me/553131574399?text=Olá! Gostaria de comprar contas Blox Fruits"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-neon-purple text-base md:text-lg px-8 py-4 flex items-center justify-center gap-2"

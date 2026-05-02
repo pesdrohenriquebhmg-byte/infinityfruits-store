@@ -11,7 +11,7 @@ const Footer = () => {
           Loja oficial de contas e itens digitais para Blox Fruits
         </p>
         <a
-          href="https://wa.me/553131578354?text=Olá"
+          href="https://wa.me/553131574399?text=Olá"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm text-neon-green hover:underline transition-colors"
