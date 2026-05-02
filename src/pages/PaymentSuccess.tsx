@@ -351,7 +351,7 @@ const PaymentSuccess = () => {
         {/* Support buttons */}
         <div className="flex gap-3 mb-5">
           <a
-            href="https://wa.me/553131578354?text=Olá! Preciso de suporte sobre meu pedido"
+            href="https://wa.me/553131574399?text=Olá! Preciso de suporte sobre meu pedido"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 btn-neon py-3 flex items-center justify-center gap-2 text-xs md:text-sm font-bold"
