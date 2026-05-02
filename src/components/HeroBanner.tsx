@@ -67,7 +67,8 @@ const HeroBanner = () => {
             href="https://wa.me/553131574399?text=Olá! Gostaria de comprar contas Blox Fruits"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-neon-purple text-base md:text-lg px-8 py-4 flex items-center justify-center gap-2"
+            style={{ backgroundColor: '#25D366' }}
+            className="font-display font-bold uppercase tracking-wider text-base md:text-lg px-8 py-4 rounded-lg transition-all duration-300 text-white flex items-center justify-center gap-2 hover:brightness-110"
           >
             <MessageCircle className="w-5 h-5" />
             Suporte 24h
