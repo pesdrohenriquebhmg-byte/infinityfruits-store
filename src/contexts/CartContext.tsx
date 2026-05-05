@@ -1,8 +1,14 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { Product } from '@/data/products';
+
+export interface CartProduct {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}
 
 export interface CartItem {
-  product: Product;
+  product: CartProduct;
   quantity: number;
 }
 
@@ -10,7 +16,7 @@ interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  addItem: (product: Product) => void;
+  addItem: (product: CartProduct) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
