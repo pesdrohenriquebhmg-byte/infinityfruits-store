@@ -132,7 +132,7 @@ const Checkout = () => {
 
     try {
       const phone = form.whatsapp.replace(/\D/g, '');
-      const selectedBumpsList = orderBumpProducts
+      const selectedBumpsList = availableBumps
         .filter(b => selectedBumps.has(b.id))
         .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
 
