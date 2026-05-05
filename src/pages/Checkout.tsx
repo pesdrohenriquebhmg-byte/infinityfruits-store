@@ -451,7 +451,7 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pix
             <span className="text-foreground font-medium">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
           </div>
         ))}
-        {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
+        {availableBumps.filter(b => selectedBumps.has(b.id)).map(b => (
           <div key={b.id} className="flex justify-between">
             <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
             <span className="text-foreground font-medium">R$ {b.price.toFixed(2).replace('.', ',')}</span>
