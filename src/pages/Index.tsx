@@ -22,12 +22,12 @@ type BloxCategory =
   | 'fisica';
 
 const bloxCategories: { key: BloxCategory; label: string; count: number }[] = [
-  { key: 'premium', label: 'Premium', count: premiumProducts.length },
   { key: 'perm', label: 'Contas PERM', count: permProducts.length },
+  { key: 'v4', label: 'Contas V4', count: v4Products.length },
   { key: 'mutation', label: 'Mutações', count: mutationProducts.length },
   { key: 'godhuman', label: 'Godhuman', count: godhumanProducts.length },
   { key: 'mitica', label: 'Mítica Aleatória', count: miticaProducts.length },
-  { key: 'v4', label: 'Contas V4', count: v4Products.length },
+  { key: 'premium', label: 'Premium', count: premiumProducts.length },
   { key: 'fisica', label: 'Frutas Físicas', count: fisicaProducts.length },
 ];
 
@@ -84,13 +84,19 @@ const Index = () => {
           </div>
         </section>
 
-        {show('premium') && <PremiumProductSection />}
         {show('perm') && (
           <ProductSection
             id="produtos"
             title="CONTAS PERM"
             subtitle="Frutas permanentes com entrega imediata"
             products={permProducts}
+          />
+        )}
+        {show('v4') && (
+          <ProductSection
+            title="CONTAS V4"
+            subtitle="Contas com raça V4 desbloqueada"
+            products={v4Products}
           />
         )}
         {show('mutation') && <MutationSection products={mutationProducts} />}
@@ -108,13 +114,7 @@ const Index = () => {
             products={miticaProducts}
           />
         )}
-        {show('v4') && (
-          <ProductSection
-            title="CONTAS V4"
-            subtitle="Contas com raça V4 desbloqueada"
-            products={v4Products}
-          />
-        )}
+        {show('premium') && <PremiumProductSection />}
         {show('fisica') && (
           <ProductSection
             title="FRUTAS FÍSICAS"
