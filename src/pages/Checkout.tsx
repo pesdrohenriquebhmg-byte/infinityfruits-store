@@ -15,12 +15,12 @@ const formatPhone = (value: string) => {
 };
 
 const customerSchema = z.object({
-  name: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100)
-    .refine(v => v.includes(' '), 'Informe seu nome completo'),
+  name: z.string().trim().min(3, 'Usuário do Roblox deve ter pelo menos 3 caracteres').max(20, 'Máximo 20 caracteres')
+    .refine(v => /^[a-zA-Z0-9_]+$/.test(v), 'Apenas letras, números e _ (formato Roblox)'),
   email: z.string().trim().email('E-mail inválido').max(255),
   whatsapp: z.string().trim()
     .transform(v => v.replace(/\D/g, ''))
-    .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos'),
+    .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos (número real)'),
   terms: z.literal(true, { errorMap: () => ({ message: 'Você precisa aceitar os termos' }) }),
 });
 
