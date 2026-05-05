@@ -91,8 +91,22 @@ const Checkout = () => {
     });
   };
 
+  // Bumps source depends on checkout type:
+  // - Blox Fruits: gamepass order bumps (with emoji)
+  // - Sailor Piece: recommended products from the store
+  const availableBumps = useMemo(() => {
+    if (isSailorCheckout) {
+      const inCart = new Set(checkoutItems.map(i => i.id));
+      return sailorProducts
+        .filter(p => !inCart.has(p.id))
+        .slice(0, 6)
+        .map(p => ({ id: p.id, name: p.name, price: p.price, image: p.image, emoji: '⭐' }));
+    }
+    return orderBumpProducts;
+  }, [isSailorCheckout, checkoutItems]);
+
   const itemsSubtotal = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const bumpsTotal = orderBumpProducts
+  const bumpsTotal = availableBumps
     .filter(b => selectedBumps.has(b.id))
     .reduce((sum, b) => sum + b.price, 0);
   const totalPrice = itemsSubtotal + bumpsTotal;
