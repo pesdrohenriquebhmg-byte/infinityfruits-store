@@ -53,6 +53,9 @@ const Navbar = () => {
           </button>
         </div>
       </div>
+      <div className="sm:hidden border-t border-border/50 px-4 py-2 flex justify-center">
+        <GameSwitcher />
+      </div>
     </nav>
   );
 };
