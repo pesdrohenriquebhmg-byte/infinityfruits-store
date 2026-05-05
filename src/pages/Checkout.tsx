@@ -405,6 +405,7 @@ const Checkout = () => {
             checkoutItems={checkoutItems}
             totalPrice={totalPrice}
             selectedBumps={selectedBumps}
+            availableBumps={availableBumps}
             pixCode={pixCode}
             pixQrCode={pixQrCode}
             copied={copied}
