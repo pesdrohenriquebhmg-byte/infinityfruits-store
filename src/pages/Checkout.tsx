@@ -302,12 +302,15 @@ const Checkout = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Nome completo</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Usuário do Roblox</label>
                 <input
                   className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Seu nome completo"
+                  placeholder="Ex: SeuUsuarioRoblox"
                   value={form.name}
-                  onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  onChange={e => setForm(p => ({ ...p, name: e.target.value.replace(/\s/g, '') }))}
                 />
                 {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
               </div>
