@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
+import { sailorProducts } from '@/data/sailorProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { z } from 'zod';
@@ -30,7 +31,14 @@ const Checkout = () => {
 
   const isCartMode = params.get('carrinho') === 'true';
   const productId = params.get('produto');
-  const singleProduct = useMemo(() => allProducts.find(p => p.id === productId), [productId]);
+  const singleProduct = useMemo(() => {
+    if (!productId) return undefined;
+    const blox = allProducts.find(p => p.id === productId);
+    if (blox) return { id: blox.id, name: blox.name, price: blox.price, image: blox.image };
+    const sp = sailorProducts.find(p => p.id === productId);
+    if (sp) return { id: sp.id, name: sp.name, price: sp.price, image: sp.image };
+    return undefined;
+  }, [productId]);
 
   // Build the list of items to checkout
   const checkoutItems = useMemo(() => {
