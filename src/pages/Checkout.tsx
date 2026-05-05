@@ -15,12 +15,12 @@ const formatPhone = (value: string) => {
 };
 
 const customerSchema = z.object({
-  name: z.string().trim().min(3, 'Nome deve ter pelo menos 3 caracteres').max(100)
-    .refine(v => v.includes(' '), 'Informe seu nome completo'),
+  name: z.string().trim().min(3, 'Usuário do Roblox deve ter pelo menos 3 caracteres').max(20, 'Máximo 20 caracteres')
+    .refine(v => /^[a-zA-Z0-9_]+$/.test(v), 'Apenas letras, números e _ (formato Roblox)'),
   email: z.string().trim().email('E-mail inválido').max(255),
   whatsapp: z.string().trim()
     .transform(v => v.replace(/\D/g, ''))
-    .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos'),
+    .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos (número real)'),
   terms: z.literal(true, { errorMap: () => ({ message: 'Você precisa aceitar os termos' }) }),
 });
 
@@ -39,6 +39,14 @@ const Checkout = () => {
     if (sp) return { id: sp.id, name: sp.name, price: sp.price, image: sp.image };
     return undefined;
   }, [productId]);
+
+  // Detect if checkout has any Sailor Piece items (id prefix 'sp-')
+  const isSailorCheckout = useMemo(() => {
+    const ids = (params.get('carrinho') === 'true')
+      ? cart.items.map(i => i.product.id)
+      : (singleProduct ? [singleProduct.id] : []);
+    return ids.length > 0 && ids.every(id => id.startsWith('sp-'));
+  }, [params, cart.items, singleProduct]);
 
   // Build the list of items to checkout
   const checkoutItems = useMemo(() => {
@@ -83,8 +91,22 @@ const Checkout = () => {
     });
   };
 
+  // Bumps source depends on checkout type:
+  // - Blox Fruits: gamepass order bumps (with emoji)
+  // - Sailor Piece: recommended products from the store
+  const availableBumps = useMemo(() => {
+    if (isSailorCheckout) {
+      const inCart = new Set(checkoutItems.map(i => i.id));
+      return sailorProducts
+        .filter(p => !inCart.has(p.id))
+        .slice(0, 6)
+        .map(p => ({ id: p.id, name: p.name, price: p.price, image: p.image, emoji: '⭐' }));
+    }
+    return orderBumpProducts;
+  }, [isSailorCheckout, checkoutItems]);
+
   const itemsSubtotal = checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const bumpsTotal = orderBumpProducts
+  const bumpsTotal = availableBumps
     .filter(b => selectedBumps.has(b.id))
     .reduce((sum, b) => sum + b.price, 0);
   const totalPrice = itemsSubtotal + bumpsTotal;
@@ -110,7 +132,7 @@ const Checkout = () => {
 
     try {
       const phone = form.whatsapp.replace(/\D/g, '');
-      const selectedBumpsList = orderBumpProducts
+      const selectedBumpsList = availableBumps
         .filter(b => selectedBumps.has(b.id))
         .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
 
@@ -220,11 +242,13 @@ const Checkout = () => {
         {step === 'form' && (
           <div className="card-gamer p-4 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg">🎮</span>
-              <h3 className="font-display text-sm font-bold text-foreground">Adicione Gamepasses ao seu pedido</h3>
+              <span className="text-lg">{isSailorCheckout ? '⭐' : '🎮'}</span>
+              <h3 className="font-display text-sm font-bold text-foreground">
+                {isSailorCheckout ? 'Produtos recomendados da loja' : 'Adicione Gamepasses ao seu pedido'}
+              </h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {orderBumpProducts.map((bump) => {
+              {availableBumps.map((bump) => {
                 const isSelected = selectedBumps.has(bump.id);
                 return (
                   <button
@@ -242,7 +266,7 @@ const Checkout = () => {
                       </div>
                     )}
                     <img src={bump.image} alt={bump.name} className="w-full aspect-video object-cover rounded-lg mb-2" loading="lazy" />
-                    <p className="text-xs font-bold text-foreground leading-tight mb-1">
+                    <p className="text-xs font-bold text-foreground leading-tight mb-1 line-clamp-2">
                       {bump.emoji} {bump.name.replace(' (Gamepass)', '')}
                     </p>
                     <p className="font-display text-sm font-black text-primary">
@@ -256,7 +280,7 @@ const Checkout = () => {
             {selectedBumps.size > 0 && (
               <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {selectedBumps.size} gamepass{selectedBumps.size > 1 ? 'es' : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
+                  {selectedBumps.size} {isSailorCheckout ? 'produto' : 'gamepass'}{selectedBumps.size > 1 ? (isSailorCheckout ? 's' : 'es') : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
                 </span>
                 <span className="font-display text-sm font-bold text-primary">
                   + R$ {bumpsTotal.toFixed(2).replace('.', ',')}
@@ -278,12 +302,15 @@ const Checkout = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">Nome completo</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">Usuário do Roblox</label>
                 <input
                   className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Seu nome completo"
+                  placeholder="Ex: SeuUsuarioRoblox"
                   value={form.name}
-                  onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  onChange={e => setForm(p => ({ ...p, name: e.target.value.replace(/\s/g, '') }))}
                 />
                 {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
               </div>
@@ -378,6 +405,7 @@ const Checkout = () => {
             checkoutItems={checkoutItems}
             totalPrice={totalPrice}
             selectedBumps={selectedBumps}
+            availableBumps={availableBumps}
             pixCode={pixCode}
             pixQrCode={pixQrCode}
             copied={copied}
@@ -390,10 +418,11 @@ const Checkout = () => {
 };
 
 // Extracted PIX display component
-function PixStep({ checkoutItems, totalPrice, selectedBumps, pixCode, pixQrCode, copied, onCopy }: {
+function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy }: {
   checkoutItems: { id: string; name: string; price: number; quantity: number }[];
   totalPrice: number;
   selectedBumps: Set<string>;
+  availableBumps: { id: string; name: string; price: number; emoji?: string }[];
   pixCode: string;
   pixQrCode: string;
   copied: boolean;
@@ -422,7 +451,7 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, pixCode, pixQrCode,
             <span className="text-foreground font-medium">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
           </div>
         ))}
-        {orderBumpProducts.filter(b => selectedBumps.has(b.id)).map(b => (
+        {availableBumps.filter(b => selectedBumps.has(b.id)).map(b => (
           <div key={b.id} className="flex justify-between">
             <span className="text-muted-foreground">{b.emoji} {b.name.replace(' (Gamepass)', '')}</span>
             <span className="text-foreground font-medium">R$ {b.price.toFixed(2).replace('.', ',')}</span>
