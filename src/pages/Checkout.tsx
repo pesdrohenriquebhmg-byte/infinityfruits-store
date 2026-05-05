@@ -418,10 +418,11 @@ const Checkout = () => {
 };
 
 // Extracted PIX display component
-function PixStep({ checkoutItems, totalPrice, selectedBumps, pixCode, pixQrCode, copied, onCopy }: {
+function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy }: {
   checkoutItems: { id: string; name: string; price: number; quantity: number }[];
   totalPrice: number;
   selectedBumps: Set<string>;
+  availableBumps: { id: string; name: string; price: number; emoji?: string }[];
   pixCode: string;
   pixQrCode: string;
   copied: boolean;
