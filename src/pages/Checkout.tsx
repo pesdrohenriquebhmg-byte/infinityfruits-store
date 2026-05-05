@@ -242,11 +242,13 @@ const Checkout = () => {
         {step === 'form' && (
           <div className="card-gamer p-4 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg">🎮</span>
-              <h3 className="font-display text-sm font-bold text-foreground">Adicione Gamepasses ao seu pedido</h3>
+              <span className="text-lg">{isSailorCheckout ? '⭐' : '🎮'}</span>
+              <h3 className="font-display text-sm font-bold text-foreground">
+                {isSailorCheckout ? 'Produtos recomendados da loja' : 'Adicione Gamepasses ao seu pedido'}
+              </h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {orderBumpProducts.map((bump) => {
+              {availableBumps.map((bump) => {
                 const isSelected = selectedBumps.has(bump.id);
                 return (
                   <button
@@ -264,7 +266,7 @@ const Checkout = () => {
                       </div>
                     )}
                     <img src={bump.image} alt={bump.name} className="w-full aspect-video object-cover rounded-lg mb-2" loading="lazy" />
-                    <p className="text-xs font-bold text-foreground leading-tight mb-1">
+                    <p className="text-xs font-bold text-foreground leading-tight mb-1 line-clamp-2">
                       {bump.emoji} {bump.name.replace(' (Gamepass)', '')}
                     </p>
                     <p className="font-display text-sm font-black text-primary">
@@ -278,7 +280,7 @@ const Checkout = () => {
             {selectedBumps.size > 0 && (
               <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {selectedBumps.size} gamepass{selectedBumps.size > 1 ? 'es' : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
+                  {selectedBumps.size} {isSailorCheckout ? 'produto' : 'gamepass'}{selectedBumps.size > 1 ? (isSailorCheckout ? 's' : 'es') : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
                 </span>
                 <span className="font-display text-sm font-bold text-primary">
                   + R$ {bumpsTotal.toFixed(2).replace('.', ',')}
