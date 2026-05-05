@@ -40,6 +40,14 @@ const Checkout = () => {
     return undefined;
   }, [productId]);
 
+  // Detect if checkout has any Sailor Piece items (id prefix 'sp-')
+  const isSailorCheckout = useMemo(() => {
+    const ids = (params.get('carrinho') === 'true')
+      ? cart.items.map(i => i.product.id)
+      : (singleProduct ? [singleProduct.id] : []);
+    return ids.length > 0 && ids.every(id => id.startsWith('sp-'));
+  }, [params, cart.items, singleProduct]);
+
   // Build the list of items to checkout
   const checkoutItems = useMemo(() => {
     if (isCartMode) {
