@@ -305,7 +305,7 @@ const Checkout = () => {
                 <label className="text-sm font-medium text-foreground mb-1 block">Usuário do Roblox</label>
                 <input
                   className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Ex: SeuUsuarioRoblox"
+                  placeholder="Ex: PlayerPro_BR123"
                   value={form.name}
                   autoCapitalize="none"
                   autoCorrect="off"
