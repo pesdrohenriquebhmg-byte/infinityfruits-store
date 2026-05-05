@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SpecialOffers from "./pages/SpecialOffers";
+import SailorPiece from "./pages/SailorPiece";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
           <Route path="/ofertas-especiais" element={<SpecialOffers />} />
+          <Route path="/sailor-piece" element={<SailorPiece />} />
           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

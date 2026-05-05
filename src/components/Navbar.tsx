@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import logo from '@/assets/logo-infinity.png';
 import { useCart } from '@/contexts/CartContext';
+import GameSwitcher from './GameSwitcher';
 
 const Navbar = () => {
   const { totalItems, setIsOpen } = useCart();
@@ -32,12 +33,9 @@ const Navbar = () => {
           </div>
         </a>
         <div className="flex items-center gap-3 md:gap-4">
-          <a href="#produtos" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-            Ver Contas
-          </a>
-          <a href="#como-funciona" className="hidden sm:block text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-            Como Funciona
-          </a>
+          <div className="hidden sm:block">
+            <GameSwitcher />
+          </div>
           <button
             onClick={() => setIsOpen(true)}
             className="relative w-12 h-12 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all"
