@@ -103,7 +103,6 @@ const Index = () => {
           />
         )}
         {show('mutation') && <MutationSection products={mutationProducts} />}
-        {filter === 'all' && <SailorBestSellersStrip />}
         {show('godhuman') && (
           <ProductSection
             title="CONTAS COM GODHUMAN"
