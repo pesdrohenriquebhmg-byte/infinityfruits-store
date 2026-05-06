@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
 import TestimonialsMarquee from '@/components/TestimonialsMarquee';
+import SailorPiecePromo from '@/components/SailorPiecePromo';
 import ProductSection from '@/components/ProductSection';
 import PremiumProductSection from '@/components/PremiumProductSection';
 import MutationSection from '@/components/MutationSection';
@@ -51,6 +52,7 @@ const Index = () => {
       <div className="relative z-10">
         <Navbar />
         <HeroBanner />
+        <SailorPiecePromo />
         <TestimonialsMarquee />
 
         {/* Filtro de categorias - mesmo padrão da Sailor Piece */}
