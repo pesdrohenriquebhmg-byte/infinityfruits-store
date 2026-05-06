@@ -52,6 +52,7 @@ const Index = () => {
       <div className="relative z-10">
         <Navbar />
         <HeroBanner />
+        <SailorPiecePromo />
         <TestimonialsMarquee />
 
         {/* Filtro de categorias - mesmo padrão da Sailor Piece */}
