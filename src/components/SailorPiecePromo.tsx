@@ -2,12 +2,22 @@ import { Link } from 'react-router-dom';
 import { Anchor, ArrowRight, Sparkles } from 'lucide-react';
 import { sailorProducts } from '@/data/sailorProducts';
 
+const FEATURED_IDS = [
+  'sp-promocao-ragna-dragon-slayer-sword-game-pass-ativada-na-sua-conta-sem',
+  'sp-promocao-promocao-atomic-strongest-shinobi-abyssal-empress-shinobi-ma',
+  'sp-promocao-combo-2-set-s-ragna-madoka-game-pass-ativada-na-sua-conta-se',
+  'sp-promocao-promocao-true-manipulator-blessed-maiden-yamato-donzela-aben',
+  'sp-promocao-madoka-melee-love-maiden-game-pass-ativada-na-sua-conta-sem-',
+  'sp-promocao-promocao-rainha-de-gelo-pacote-de-roupas-da-rainha-de-gelo-i',
+  'sp-promocao-promocao-moon-slayer-moon-outfit-assassino-de-lua-game-pass-',
+  'sp-contas-conta-lv-16000-10-milhoes-bounty-6-sets-chance-de-varios-b10',
+];
+
 const SailorPiecePromo = () => {
-  // Pega 4 destaques (com maior desconto)
-  const highlights = [...sailorProducts]
-    .filter(p => p.oldPrice)
-    .sort((a, b) => (b.oldPrice! - b.price) - (a.oldPrice! - a.price))
-    .slice(0, 4);
+  const highlights = FEATURED_IDS
+    .map(id => sailorProducts.find(p => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .slice(0, 8);
 
   return (
     <section className="py-10 md:py-14 relative overflow-hidden">
@@ -40,24 +50,40 @@ const SailorPiecePromo = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            {highlights.map(p => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 md:gap-4">
+            {highlights.slice(0, 4).map(p => (
               <Link
                 key={p.id}
                 to="/sailor-piece"
-                className="group relative rounded-xl overflow-hidden border border-border/60 bg-card/60 hover:border-primary/60 hover:shadow-[0_0_20px_hsl(180_100%_50%_/_0.25)] transition-all"
+                className="group relative rounded-xl overflow-hidden border border-border/60 bg-card/80 hover:border-primary/60 hover:shadow-[0_0_25px_hsl(180_100%_50%_/_0.3)] hover:-translate-y-0.5 transition-all"
               >
-                <div className="aspect-square overflow-hidden bg-background/40">
+                {p.oldPrice && (
+                  <div className="absolute top-2 left-2 z-10">
+                    <span className="text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md bg-destructive text-destructive-foreground shadow-lg">
+                      -{Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}%
+                    </span>
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 z-10">
+                  <span className="text-[9px] md:text-[10px] font-black px-1.5 py-0.5 rounded-md bg-logo-yellow/95 text-background shadow-lg">
+                    🔥 HOT
+                  </span>
+                </div>
+                <div className="aspect-square overflow-hidden bg-gradient-to-b from-background/20 to-background/60">
                   <img
                     src={p.image}
                     alt={p.name}
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
-                <div className="p-2.5">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-display font-black text-primary text-sm md:text-base">
+                <div className="p-2.5 md:p-3">
+                  <h4 className="font-display font-bold text-[11px] md:text-xs text-foreground line-clamp-2 leading-tight mb-1.5 min-h-[2.2rem]">
+                    {p.name}
+                  </h4>
+                  <div className="flex items-baseline gap-1.5 flex-wrap">
+                    <span className="font-display font-black text-primary text-base md:text-lg glow-text-cyan">
                       R$ {p.price.toFixed(2).replace('.', ',')}
                     </span>
                     {p.oldPrice && (
@@ -66,8 +92,8 @@ const SailorPiecePromo = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-1 mt-0.5 uppercase tracking-wide">
-                    Sailor Piece
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground mt-1 uppercase tracking-wide flex items-center gap-1">
+                    <span className="text-logo-yellow">⚓</span> Sailor Piece · PIX
                   </p>
                 </div>
               </Link>
