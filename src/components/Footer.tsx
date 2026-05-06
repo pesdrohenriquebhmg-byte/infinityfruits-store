@@ -8,7 +8,7 @@ const Footer = () => {
           <span className="text-logo-sky">INFINITY</span> <span className="text-logo-yellow">FRUITS</span>
         </p>
         <p className="text-xs text-muted-foreground mb-4">
-          Loja oficial de contas e itens digitais para Blox Fruits
+          Loja oficial de contas e itens digitais para Blox Fruits e Sailor Piece
         </p>
         <a
           href="https://wa.me/553131574399?text=Olá"
