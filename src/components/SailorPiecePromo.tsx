@@ -33,10 +33,11 @@ const SailorPiecePromo = () => {
           </div>
 
           <div className="relative flex-1 min-w-0">
-            <p className="text-sm md:text-base font-display font-black text-foreground leading-tight tracking-tight">
-              Também vendemos{' '}
-              <span className="text-logo-sky">SAILOR</span>{' '}
-              <span className="text-logo-yellow">PIECE</span>
+            <p className="text-sm md:text-base font-display font-black text-foreground leading-tight">
+              <span className="font-sans font-bold text-foreground/90">Também vendemos</span>{' '}
+              <span className="text-logo-sky tracking-wide">SAILOR</span>
+              <span className="text-foreground/40 mx-1">·</span>
+              <span className="text-logo-yellow tracking-wide">PIECE</span>
             </p>
             <p className="text-[11px] md:text-xs text-muted-foreground mt-0.5 truncate">
               Contas · Sets · Bounty · Game Pass · Baús
