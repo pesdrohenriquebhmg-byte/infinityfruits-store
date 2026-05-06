@@ -92,8 +92,12 @@ const MutationSection = ({ products }: MutationSectionProps) => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="max-h-full max-w-full object-contain drop-shadow-[0_0_20px_hsl(180,100%,50%,0.2)] hover:scale-105 transition-transform duration-300"
+                  width="220"
+                  height="220"
                   loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="max-h-full max-w-full object-contain drop-shadow-[0_0_20px_hsl(180,100%,50%,0.2)] hover:scale-105 transition-transform duration-300"
                 />
               </div>
 

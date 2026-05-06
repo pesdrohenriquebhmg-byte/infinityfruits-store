@@ -96,7 +96,7 @@ const SpecialOffers = () => {
               </div>
 
               <div className="flex gap-3 md:gap-4 mb-3 md:mb-4">
-                <img src={offer.image} alt={offer.name} className="w-16 h-16 md:w-20 md:h-20 object-contain shrink-0" />
+                <img src={offer.image} alt={offer.name} width="80" height="80" loading="lazy" decoding="async" className="w-16 h-16 md:w-20 md:h-20 object-contain shrink-0" />
                 <div className="min-w-0 pt-1">
                   <h3 className="font-display text-xs md:text-sm font-bold text-foreground mb-1 pr-16">{offer.name}</h3>
                   <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed line-clamp-2">{offer.description}</p>

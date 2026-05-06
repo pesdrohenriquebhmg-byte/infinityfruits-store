@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import logo from '@/assets/logo-infinity.png';
+import logo from '@/assets/logo-infinity.webp';
 import { useCart } from '@/contexts/CartContext';
 import GameSwitcher from './GameSwitcher';
 
