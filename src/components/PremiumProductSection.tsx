@@ -39,6 +39,10 @@ const PremiumProductSection = () => {
               <img
                 src="/images/conta-premium.webp"
                 alt="Conta Premium"
+                width="320"
+                height="320"
+                loading="lazy"
+                decoding="async"
                 className="max-h-full max-w-full object-contain drop-shadow-[0_0_30px_hsl(45,100%,50%,0.4)] hover:scale-105 transition-transform duration-300"
               />
             </div>

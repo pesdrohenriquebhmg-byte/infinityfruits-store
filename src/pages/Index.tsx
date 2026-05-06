@@ -12,7 +12,7 @@ import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { permProducts, godhumanProducts, miticaProducts, v4Products, mutationProducts, fisicaProducts, premiumProducts } from '@/data/products';
-import siteBg from '@/assets/site-bg.jpg';
+import siteBg from '@/assets/site-bg.webp';
 
 type BloxCategory =
   | 'premium'
@@ -46,7 +46,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background relative">
       <div className="fixed inset-0 z-0">
-        <img src={siteBg} alt="" className="w-full h-full object-cover blur-sm" />
+        <img src={siteBg} alt="" aria-hidden="true" loading="eager" decoding="async" fetchPriority="low" className="w-full h-full object-cover blur-sm" />
         <div className="absolute inset-0 bg-background/85" />
       </div>
 

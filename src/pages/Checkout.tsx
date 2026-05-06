@@ -216,7 +216,7 @@ const Checkout = () => {
         <div className="card-gamer p-4 mb-6 space-y-3">
           {checkoutItems.map(item => (
             <div key={item.id} className="flex items-center gap-4">
-              <img src={item.image} alt={item.name} className="w-14 h-14 object-contain" />
+              <img src={item.image} alt={item.name} width="56" height="56" loading="lazy" decoding="async" className="w-14 h-14 object-contain" />
               <div className="flex-1 min-w-0">
                 <h2 className="font-display text-sm font-bold text-foreground truncate">{item.name}</h2>
                 <p className="text-xs text-muted-foreground">
