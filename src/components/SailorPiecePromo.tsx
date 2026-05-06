@@ -45,7 +45,7 @@ const SailorPiecePromo = () => {
               className="btn-neon text-sm md:text-base px-5 py-3 inline-flex items-center justify-center gap-2 self-start md:self-auto whitespace-nowrap"
             >
               <Anchor className="w-4 h-4" />
-              Ver loja Sailor Piece
+              Ver categoria Sailor Piece
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
