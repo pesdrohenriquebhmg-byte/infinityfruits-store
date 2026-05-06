@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
 import TestimonialsMarquee from '@/components/TestimonialsMarquee';
 import SailorPiecePromo from '@/components/SailorPiecePromo';
-import SailorBestSellersStrip from '@/components/SailorBestSellersStrip';
+
 import ProductSection from '@/components/ProductSection';
 import PremiumProductSection from '@/components/PremiumProductSection';
 import MutationSection from '@/components/MutationSection';
