@@ -13,8 +13,13 @@ const GameSwitcher = () => {
       <Link to="/" className={`${base} ${!isSailor ? active : inactive}`}>
         ⚔️ Blox Fruits
       </Link>
-      <Link to="/sailor-piece" className={`${base} ${isSailor ? active : inactive}`}>
+      <Link to="/sailor-piece" className={`${base} ${isSailor ? active : inactive} relative`}>
         ⚓ Sailor Piece
+        {!isSailor && (
+          <span className="absolute -top-2 -right-2 text-[8px] md:text-[9px] font-black px-1.5 py-0.5 rounded-full bg-logo-yellow text-background shadow-[0_0_10px_hsl(50_100%_50%_/_0.5)] whitespace-nowrap leading-none border border-logo-yellow/60">
+            Também vendemos
+          </span>
+        )}
       </Link>
     </div>
   );
