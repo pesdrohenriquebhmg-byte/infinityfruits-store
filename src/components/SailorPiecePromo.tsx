@@ -4,12 +4,12 @@ import { sailorProducts } from '@/data/sailorProducts';
 
 const FEATURED_IDS = [
   'sp-promocao-ragna-dragon-slayer-sword-game-pass-ativada-na-sua-conta-sem',
-  'sp-promocao-promocao-atomic-strongest-shinobi-abyssal-empress-shinobi-ma',
-  'sp-promocao-combo-2-set-s-ragna-madoka-game-pass-ativada-na-sua-conta-se',
-  'sp-promocao-promocao-true-manipulator-blessed-maiden-yamato-donzela-aben',
   'sp-promocao-madoka-melee-love-maiden-game-pass-ativada-na-sua-conta-sem-',
+  'sp-promocao-combo-2-set-s-ragna-madoka-game-pass-ativada-na-sua-conta-se',
   'sp-promocao-promocao-rainha-de-gelo-pacote-de-roupas-da-rainha-de-gelo-i',
+  'sp-promocao-promocao-atomic-strongest-shinobi-abyssal-empress-shinobi-ma',
   'sp-promocao-promocao-moon-slayer-moon-outfit-assassino-de-lua-game-pass-',
+  'sp-promocao-promocao-true-manipulator-blessed-maiden-yamato-donzela-aben',
   'sp-contas-conta-lv-16000-10-milhoes-bounty-6-sets-chance-de-varios-b10',
 ];
 
