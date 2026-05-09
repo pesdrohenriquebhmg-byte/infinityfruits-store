@@ -1,11 +1,31 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2, MessageCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
 import { sailorProducts } from '@/data/sailorProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { z } from 'zod';
+
+const SUPPORT_WHATSAPP = 'https://wa.me/553131574399?text=Ol%C3%A1!%20Tive%20um%20problema%20no%20pagamento%20do%20meu%20pedido%20e%20preciso%20de%20ajuda.';
+
+// Map raw API errors into friendly Portuguese messages
+const friendlyError = (raw: string): string => {
+  const r = (raw || '').toLowerCase();
+  if (r.includes('letras') || r.includes('apenas letras')) {
+    return 'Seu nome contém caracteres não aceitos pelo PIX. Use apenas letras (sem números ou símbolos) — pode ser seu nome real. Se preferir, fale com a gente no WhatsApp.';
+  }
+  if (r.includes('email')) return 'O e-mail informado parece inválido. Confira e tente novamente.';
+  if (r.includes('phone') || r.includes('whatsapp')) return 'Número de WhatsApp inválido. Use DDD + 9 + 8 dígitos.';
+  if (r.includes('amount')) return 'Valor inválido para o PIX. Atualize a página e tente novamente.';
+  if (r.includes('failed to fetch') || r.includes('network') || r.includes('non-2xx')) {
+    return 'Não conseguimos falar com o gateway de pagamento agora. Verifique sua internet e tente novamente em instantes.';
+  }
+  if (r.includes('buckpay') || r.includes('500') || r.includes('400')) {
+    return 'Falha temporária ao gerar seu PIX. Tente novamente em alguns segundos. Se persistir, fale com a gente no WhatsApp.';
+  }
+  return raw || 'Erro inesperado ao gerar o pagamento. Tente novamente.';
+};
 
 const formatPhone = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 11);
