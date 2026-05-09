@@ -460,6 +460,7 @@ const Checkout = () => {
             pixQrCode={pixQrCode}
             copied={copied}
             onCopy={handleCopy}
+            elapsed={pixElapsed}
           />
         )}
       </div>
