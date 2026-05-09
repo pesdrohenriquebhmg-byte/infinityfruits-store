@@ -1,7 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle, Copy, Check, Loader2 } from 'lucide-react';
+import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+
+const SUPPORT_WHATSAPP = 'https://wa.me/553131574399?text=Ol%C3%A1!%20Tive%20um%20problema%20no%20pagamento%20da%20entrega%20priorit%C3%A1ria%20e%20preciso%20de%20ajuda.';
+
+const friendlyPriorityError = (raw: string): string => {
+  const r = (raw || '').toLowerCase();
+  if (r.includes('não encontrados') || r.includes('comprador')) return raw;
+  if (r.includes('failed to fetch') || r.includes('network') || r.includes('non-2xx')) {
+    return 'Não conseguimos falar com o gateway agora. Verifique sua internet e tente de novo em instantes.';
+  }
+  if (r.includes('letras')) {
+    return 'Seu nome contém caracteres não aceitos. Fale com a gente no WhatsApp para liberar manualmente.';
+  }
+  if (r.includes('500') || r.includes('400') || r.includes('buckpay')) {
+    return 'Falha temporária ao gerar o PIX da prioridade. Tente novamente. Se persistir, chame no WhatsApp.';
+  }
+  return raw || 'Erro ao gerar pagamento. Tente novamente.';
+};
 
 type Step = 'demand' | 'priority-pix' | 'confirmed';
 
