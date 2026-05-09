@@ -324,9 +324,34 @@ const PaymentSuccess = () => {
                   </>
                 )}
 
-                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Aguardando pagamento...
+                <div className={`p-3 rounded-lg border ${isLate ? 'bg-destructive/5 border-destructive/30' : 'bg-neon-yellow/5 border-neon-yellow/20'}`}>
+                  <div className="flex items-center justify-center gap-2">
+                    {isLate ? (
+                      <AlertTriangle className="w-4 h-4 text-destructive" />
+                    ) : (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-neon-yellow" />
+                    )}
+                    <p className={`text-xs font-medium ${isLate ? 'text-destructive' : 'text-neon-yellow'}`}>
+                      {isLate
+                        ? `Pagamento ainda não detectado (${mins}m${secs.toString().padStart(2, '0')}s)`
+                        : `Aguardando pagamento... ${mins}m${secs.toString().padStart(2, '0')}s`}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed text-center">
+                    {isLate
+                      ? 'Já pagou e nada aconteceu? Os bancos podem demorar. Fale com a gente para liberar manualmente.'
+                      : 'Confirmamos automaticamente em até 5 minutos.'}
+                  </p>
+                  {isLate && (
+                    <a
+                      href={SUPPORT_WHATSAPP}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors w-full"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Falar no WhatsApp
+                    </a>
+                  )}
                 </div>
               </div>
 
