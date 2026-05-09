@@ -105,8 +105,8 @@ const PaymentSuccess = () => {
       }
     } catch (err: unknown) {
       console.error('Priority payment error:', err);
-      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
-      setError(msg);
+      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setError(friendlyPriorityError(raw));
     } finally {
       setLoading(false);
     }
