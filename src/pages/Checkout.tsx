@@ -324,8 +324,29 @@ const Checkout = () => {
             <h3 className="font-display text-lg font-bold text-foreground mb-6">Seus dados</h3>
 
             {errors.general && (
-              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-xs text-destructive font-medium">{errors.general}</p>
+              <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+                <div className="flex items-start gap-2 mb-3">
+                  <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-xs text-destructive font-medium leading-relaxed">{errors.general}</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Tentar novamente
+                  </button>
+                  <a
+                    href={SUPPORT_WHATSAPP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" /> Falar no WhatsApp
+                  </a>
+                </div>
               </div>
             )}
 
