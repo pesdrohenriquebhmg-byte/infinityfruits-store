@@ -88,6 +88,15 @@ const Checkout = () => {
   const [pixCode, setPixCode] = useState('');
   const [pixQrCode, setPixQrCode] = useState('');
   const [orderId, setOrderId] = useState('');
+  const [pixElapsed, setPixElapsed] = useState(0);
+
+  // Tick a counter while waiting for PIX confirmation
+  useEffect(() => {
+    if (step !== 'pix') return;
+    setPixElapsed(0);
+    const t = setInterval(() => setPixElapsed(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   if (checkoutItems.length === 0) {
     return (
