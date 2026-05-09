@@ -36,6 +36,19 @@ const PaymentSuccess = () => {
   const [priorityOrderId, setPriorityOrderId] = useState('');
   const [copied, setCopied] = useState(false);
   const [priorityPaid, setPriorityPaid] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+
+  // Tick while waiting for priority PIX
+  useEffect(() => {
+    if (step !== 'priority-pix' || priorityPaid) return;
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [step, priorityPaid]);
+
+  const isLate = elapsed >= 5 * 60;
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
 
   // Retrieve buyer info from the original order's localStorage or fallback
   const getBuyerInfo = () => {
