@@ -61,12 +61,27 @@ Deno.serve(async (req) => {
     // Phone needs country code for Buckpay (55 + number)
     const phone = buyer.phone.startsWith("55") ? buyer.phone : `55${buyer.phone}`;
 
+    // Buckpay only accepts letters, spaces, hyphens and apostrophes in name.
+    // Many users put their Roblox username (with numbers) here, which gets rejected.
+    const sanitizeName = (raw: string): string => {
+      const cleaned = (raw || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+        .replace(/[^a-zA-ZÀ-ÿ\s\-']/g, " ") // keep only letters, spaces, hyphens, apostrophes
+        .replace(/\s+/g, " ")
+        .trim();
+      if (cleaned.length < 2) return "Cliente Infinity";
+      // Buckpay also requires at least two name parts in some cases
+      return cleaned.includes(" ") ? cleaned : `${cleaned} Silva`;
+    };
+    const safeName = sanitizeName(buyer.name);
+
     const buckpayPayload = {
       external_id: externalId,
       payment_method: "pix",
       amount: total_amount || amount,
       buyer: {
-        name: buyer.name,
+        name: safeName,
         email: buyer.email,
         phone,
       },

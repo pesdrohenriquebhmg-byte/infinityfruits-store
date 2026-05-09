@@ -61,12 +61,24 @@ Deno.serve(async (req) => {
 
     const phone = buyer_phone.startsWith("55") ? buyer_phone : `55${buyer_phone}`;
 
+    const sanitizeName = (raw: string): string => {
+      const cleaned = (raw || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-ZÀ-ÿ\s\-']/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (cleaned.length < 2) return "Cliente Infinity";
+      return cleaned.includes(" ") ? cleaned : `${cleaned} Silva`;
+    };
+    const safeName = sanitizeName(buyer_name);
+
     const buckpayPayload = {
       external_id: externalId,
       payment_method: "pix",
       amount: amountCents,
       buyer: {
-        name: buyer_name,
+        name: safeName,
         email: buyer_email,
         phone,
       },
