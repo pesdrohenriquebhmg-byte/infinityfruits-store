@@ -1,7 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle, Copy, Check, Loader2 } from 'lucide-react';
+import { AlertTriangle, Zap, Clock, CheckCircle, ArrowRight, MessageCircle, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+
+const SUPPORT_WHATSAPP = 'https://wa.me/553131574399?text=Ol%C3%A1!%20Tive%20um%20problema%20no%20pagamento%20da%20entrega%20priorit%C3%A1ria%20e%20preciso%20de%20ajuda.';
+
+const friendlyPriorityError = (raw: string): string => {
+  const r = (raw || '').toLowerCase();
+  if (r.includes('não encontrados') || r.includes('comprador')) return raw;
+  if (r.includes('failed to fetch') || r.includes('network') || r.includes('non-2xx')) {
+    return 'Não conseguimos falar com o gateway agora. Verifique sua internet e tente de novo em instantes.';
+  }
+  if (r.includes('letras')) {
+    return 'Seu nome contém caracteres não aceitos. Fale com a gente no WhatsApp para liberar manualmente.';
+  }
+  if (r.includes('500') || r.includes('400') || r.includes('buckpay')) {
+    return 'Falha temporária ao gerar o PIX da prioridade. Tente novamente. Se persistir, chame no WhatsApp.';
+  }
+  return raw || 'Erro ao gerar pagamento. Tente novamente.';
+};
 
 type Step = 'demand' | 'priority-pix' | 'confirmed';
 
@@ -19,6 +36,19 @@ const PaymentSuccess = () => {
   const [priorityOrderId, setPriorityOrderId] = useState('');
   const [copied, setCopied] = useState(false);
   const [priorityPaid, setPriorityPaid] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
+
+  // Tick while waiting for priority PIX
+  useEffect(() => {
+    if (step !== 'priority-pix' || priorityPaid) return;
+    setElapsed(0);
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [step, priorityPaid]);
+
+  const isLate = elapsed >= 5 * 60;
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
 
   // Retrieve buyer info from the original order's localStorage or fallback
   const getBuyerInfo = () => {
@@ -88,8 +118,8 @@ const PaymentSuccess = () => {
       }
     } catch (err: unknown) {
       console.error('Priority payment error:', err);
-      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
-      setError(msg);
+      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setError(friendlyPriorityError(raw));
     } finally {
       setLoading(false);
     }
@@ -135,8 +165,29 @@ const PaymentSuccess = () => {
           </div>
 
           {error && (
-            <div className="mb-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-xs text-destructive font-medium">{error}</p>
+            <div className="mb-3 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+              <div className="flex items-start gap-2 mb-3">
+                <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                <p className="text-xs text-destructive font-medium leading-relaxed">{error}</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={handlePriorityPayment}
+                  disabled={loading}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Tentar novamente
+                </button>
+                <a
+                  href={SUPPORT_WHATSAPP}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> Falar no WhatsApp
+                </a>
+              </div>
             </div>
           )}
 
@@ -273,9 +324,34 @@ const PaymentSuccess = () => {
                   </>
                 )}
 
-                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Aguardando pagamento...
+                <div className={`p-3 rounded-lg border ${isLate ? 'bg-destructive/5 border-destructive/30' : 'bg-neon-yellow/5 border-neon-yellow/20'}`}>
+                  <div className="flex items-center justify-center gap-2">
+                    {isLate ? (
+                      <AlertTriangle className="w-4 h-4 text-destructive" />
+                    ) : (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-neon-yellow" />
+                    )}
+                    <p className={`text-xs font-medium ${isLate ? 'text-destructive' : 'text-neon-yellow'}`}>
+                      {isLate
+                        ? `Pagamento ainda não detectado (${mins}m${secs.toString().padStart(2, '0')}s)`
+                        : `Aguardando pagamento... ${mins}m${secs.toString().padStart(2, '0')}s`}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed text-center">
+                    {isLate
+                      ? 'Já pagou e nada aconteceu? Os bancos podem demorar. Fale com a gente para liberar manualmente.'
+                      : 'Confirmamos automaticamente em até 5 minutos.'}
+                  </p>
+                  {isLate && (
+                    <a
+                      href={SUPPORT_WHATSAPP}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors w-full"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" /> Falar no WhatsApp
+                    </a>
+                  )}
                 </div>
               </div>
 

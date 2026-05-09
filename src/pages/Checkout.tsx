@@ -1,11 +1,31 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Shield, Zap, Clock, Loader2, MessageCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { allProducts, orderBumpProducts } from '@/data/products';
 import { sailorProducts } from '@/data/sailorProducts';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { z } from 'zod';
+
+const SUPPORT_WHATSAPP = 'https://wa.me/553131574399?text=Ol%C3%A1!%20Tive%20um%20problema%20no%20pagamento%20do%20meu%20pedido%20e%20preciso%20de%20ajuda.';
+
+// Map raw API errors into friendly Portuguese messages
+const friendlyError = (raw: string): string => {
+  const r = (raw || '').toLowerCase();
+  if (r.includes('letras') || r.includes('apenas letras')) {
+    return 'Seu nome contém caracteres não aceitos pelo PIX. Use apenas letras (sem números ou símbolos) — pode ser seu nome real. Se preferir, fale com a gente no WhatsApp.';
+  }
+  if (r.includes('email')) return 'O e-mail informado parece inválido. Confira e tente novamente.';
+  if (r.includes('phone') || r.includes('whatsapp')) return 'Número de WhatsApp inválido. Use DDD + 9 + 8 dígitos.';
+  if (r.includes('amount')) return 'Valor inválido para o PIX. Atualize a página e tente novamente.';
+  if (r.includes('failed to fetch') || r.includes('network') || r.includes('non-2xx')) {
+    return 'Não conseguimos falar com o gateway de pagamento agora. Verifique sua internet e tente novamente em instantes.';
+  }
+  if (r.includes('buckpay') || r.includes('500') || r.includes('400')) {
+    return 'Falha temporária ao gerar seu PIX. Tente novamente em alguns segundos. Se persistir, fale com a gente no WhatsApp.';
+  }
+  return raw || 'Erro inesperado ao gerar o pagamento. Tente novamente.';
+};
 
 const formatPhone = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -68,6 +88,15 @@ const Checkout = () => {
   const [pixCode, setPixCode] = useState('');
   const [pixQrCode, setPixQrCode] = useState('');
   const [orderId, setOrderId] = useState('');
+  const [pixElapsed, setPixElapsed] = useState(0);
+
+  // Tick a counter while waiting for PIX confirmation
+  useEffect(() => {
+    if (step !== 'pix') return;
+    setPixElapsed(0);
+    const t = setInterval(() => setPixElapsed(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   if (checkoutItems.length === 0) {
     return (
@@ -170,8 +199,8 @@ const Checkout = () => {
       }
     } catch (err: unknown) {
       console.error('Payment error:', err);
-      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
-      setErrors({ general: msg });
+      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setErrors({ general: friendlyError(raw) });
     } finally {
       setLoading(false);
     }
@@ -295,8 +324,29 @@ const Checkout = () => {
             <h3 className="font-display text-lg font-bold text-foreground mb-6">Seus dados</h3>
 
             {errors.general && (
-              <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-xs text-destructive font-medium">{errors.general}</p>
+              <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
+                <div className="flex items-start gap-2 mb-3">
+                  <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-xs text-destructive font-medium leading-relaxed">{errors.general}</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Tentar novamente
+                  </button>
+                  <a
+                    href={SUPPORT_WHATSAPP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" /> Falar no WhatsApp
+                  </a>
+                </div>
               </div>
             )}
 
@@ -410,6 +460,7 @@ const Checkout = () => {
             pixQrCode={pixQrCode}
             copied={copied}
             onCopy={handleCopy}
+            elapsed={pixElapsed}
           />
         )}
       </div>
@@ -418,7 +469,7 @@ const Checkout = () => {
 };
 
 // Extracted PIX display component
-function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy }: {
+function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy, elapsed }: {
   checkoutItems: { id: string; name: string; price: number; quantity: number }[];
   totalPrice: number;
   selectedBumps: Set<string>;
@@ -427,7 +478,12 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pix
   pixQrCode: string;
   copied: boolean;
   onCopy: () => void;
+  elapsed: number;
 }) {
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const isLate = elapsed >= 5 * 60; // 5 min without confirmation
+
   return (
     <div className="card-gamer p-6 text-center">
       <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neon-green/10 flex items-center justify-center">
@@ -480,12 +536,36 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pix
         </div>
       )}
 
-      <div className="mt-6 p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
-        <p className="text-xs text-neon-yellow font-medium">⏱ O pagamento é confirmado automaticamente em até 5 minutos</p>
+      {/* Live status / countdown */}
+      <div className={`mt-6 p-3 rounded-lg border ${isLate ? 'bg-destructive/5 border-destructive/30' : 'bg-neon-yellow/5 border-neon-yellow/20'}`}>
+        <div className="flex items-center justify-center gap-2">
+          {isLate ? (
+            <AlertTriangle className="w-4 h-4 text-destructive" />
+          ) : (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-neon-yellow" />
+          )}
+          <p className={`text-xs font-medium ${isLate ? 'text-destructive' : 'text-neon-yellow'}`}>
+            {isLate
+              ? `Pagamento ainda não detectado (${mins}m${secs.toString().padStart(2, '0')}s)`
+              : `Aguardando pagamento... ${mins}m${secs.toString().padStart(2, '0')}s`}
+          </p>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+          {isLate
+            ? 'Já pagou e nada aconteceu? Os bancos podem demorar alguns minutos. Se persistir, fale com a gente — vamos liberar manualmente.'
+            : 'Confirmamos automaticamente em até 5 minutos. Após o pagamento, você será redirecionado.'}
+        </p>
+        {isLate && (
+          <a
+            href={SUPPORT_WHATSAPP}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors w-full"
+          >
+            <MessageCircle className="w-3.5 h-3.5" /> Falar com suporte no WhatsApp
+          </a>
+        )}
       </div>
-      <p className="text-xs text-muted-foreground mt-4">
-        Após o pagamento, você será redirecionado automaticamente.
-      </p>
     </div>
   );
 }
