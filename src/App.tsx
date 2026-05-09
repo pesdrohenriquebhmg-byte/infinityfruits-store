@@ -30,6 +30,8 @@ const App = () => (
           <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
           <Route path="/ofertas-especiais" element={<SpecialOffers />} />
           <Route path="/sailor-piece" element={<SailorPiece />} />
+          <Route path="/termos" element={<Terms />} />
+          <Route path="/politica-privacidade" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
