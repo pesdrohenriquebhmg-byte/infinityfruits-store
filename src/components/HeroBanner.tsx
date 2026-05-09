@@ -17,7 +17,7 @@ const HeroBanner = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center py-16">
-        <img src={logo} alt="INFINITY FRUITS" width="384" height="384" fetchPriority="high" decoding="async" className="w-auto h-44 md:h-56 mx-auto mb-6 animate-float drop-shadow-[0_0_50px_hsl(200,80%,50%,0.4)]" />
+        <img src={logo} alt="INFINITY FRUITS" width="384" height="384" decoding="async" className="w-auto h-44 md:h-56 mx-auto mb-6 animate-float drop-shadow-[0_0_50px_hsl(200,80%,50%,0.4)]" />
 
         {/* Stats badges */}
         <div className="flex flex-wrap justify-center gap-3 mb-6">

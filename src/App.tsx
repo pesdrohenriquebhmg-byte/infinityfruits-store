@@ -10,6 +10,8 @@ import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SpecialOffers from "./pages/SpecialOffers";
 import SailorPiece from "./pages/SailorPiece";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
           <Route path="/ofertas-especiais" element={<SpecialOffers />} />
           <Route path="/sailor-piece" element={<SailorPiece />} />
+          <Route path="/termos" element={<Terms />} />
+          <Route path="/politica-privacidade" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

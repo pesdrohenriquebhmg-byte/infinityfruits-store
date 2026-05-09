@@ -22,7 +22,7 @@ const SailorPiece = () => {
   return (
     <div className="min-h-screen bg-background relative">
       <div className="fixed inset-0 z-0">
-        <img src={siteBg} alt="" aria-hidden="true" loading="eager" decoding="async" fetchPriority="low" className="w-full h-full object-cover blur-sm opacity-60" />
+        <img src={siteBg} alt="" aria-hidden="true" loading="eager" decoding="async" className="w-full h-full object-cover blur-sm opacity-60" />
         <div className="absolute inset-0 bg-background/90" />
       </div>
 
