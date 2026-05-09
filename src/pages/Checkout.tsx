@@ -469,7 +469,7 @@ const Checkout = () => {
 };
 
 // Extracted PIX display component
-function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy }: {
+function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pixCode, pixQrCode, copied, onCopy, elapsed }: {
   checkoutItems: { id: string; name: string; price: number; quantity: number }[];
   totalPrice: number;
   selectedBumps: Set<string>;
@@ -478,7 +478,12 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pix
   pixQrCode: string;
   copied: boolean;
   onCopy: () => void;
+  elapsed: number;
 }) {
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const isLate = elapsed >= 5 * 60; // 5 min without confirmation
+
   return (
     <div className="card-gamer p-6 text-center">
       <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neon-green/10 flex items-center justify-center">
@@ -531,12 +536,36 @@ function PixStep({ checkoutItems, totalPrice, selectedBumps, availableBumps, pix
         </div>
       )}
 
-      <div className="mt-6 p-3 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
-        <p className="text-xs text-neon-yellow font-medium">⏱ O pagamento é confirmado automaticamente em até 5 minutos</p>
+      {/* Live status / countdown */}
+      <div className={`mt-6 p-3 rounded-lg border ${isLate ? 'bg-destructive/5 border-destructive/30' : 'bg-neon-yellow/5 border-neon-yellow/20'}`}>
+        <div className="flex items-center justify-center gap-2">
+          {isLate ? (
+            <AlertTriangle className="w-4 h-4 text-destructive" />
+          ) : (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-neon-yellow" />
+          )}
+          <p className={`text-xs font-medium ${isLate ? 'text-destructive' : 'text-neon-yellow'}`}>
+            {isLate
+              ? `Pagamento ainda não detectado (${mins}m${secs.toString().padStart(2, '0')}s)`
+              : `Aguardando pagamento... ${mins}m${secs.toString().padStart(2, '0')}s`}
+          </p>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+          {isLate
+            ? 'Já pagou e nada aconteceu? Os bancos podem demorar alguns minutos. Se persistir, fale com a gente — vamos liberar manualmente.'
+            : 'Confirmamos automaticamente em até 5 minutos. Após o pagamento, você será redirecionado.'}
+        </p>
+        {isLate && (
+          <a
+            href={SUPPORT_WHATSAPP}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 rounded-lg bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 transition-colors w-full"
+          >
+            <MessageCircle className="w-3.5 h-3.5" /> Falar com suporte no WhatsApp
+          </a>
+        )}
       </div>
-      <p className="text-xs text-muted-foreground mt-4">
-        Após o pagamento, você será redirecionado automaticamente.
-      </p>
     </div>
   );
 }
