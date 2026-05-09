@@ -199,8 +199,8 @@ const Checkout = () => {
       }
     } catch (err: unknown) {
       console.error('Payment error:', err);
-      const msg = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
-      setErrors({ general: msg });
+      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      setErrors({ general: friendlyError(raw) });
     } finally {
       setLoading(false);
     }
