@@ -32,6 +32,25 @@ const friendlyError = (raw: string): string => {
   return raw || 'Erro inesperado ao gerar o pagamento. Tente novamente.';
 };
 
+const getPaymentErrorMessage = async (err: unknown): Promise<string> => {
+  if (!(err instanceof Error)) return 'Erro ao gerar pagamento';
+
+  const context = (err as Error & { context?: unknown }).context;
+  if (context instanceof Response) {
+    try {
+      const payload = await context.clone().json();
+      if (typeof payload?.error === 'string') return payload.error;
+    } catch {
+      try {
+        const text = await context.clone().text();
+        if (text) return text;
+      } catch { /* ignore */ }
+    }
+  }
+
+  return err.message;
+};
+
 const formatPhone = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 2) return digits;
@@ -214,7 +233,7 @@ const Checkout = () => {
       }
     } catch (err: unknown) {
       console.error('Payment error:', err);
-      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      const raw = await getPaymentErrorMessage(err);
       setErrors({ general: friendlyError(raw) });
     } finally {
       setLoading(false);
