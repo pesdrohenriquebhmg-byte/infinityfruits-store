@@ -26,10 +26,18 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { product_id, product_name, amount, total_amount, bumps, buyer } = body;
+    const chargeAmount = Number(total_amount || amount);
 
     if (!product_id || !amount || !buyer?.name || !buyer?.email || !buyer?.phone) {
       return new Response(
         JSON.stringify({ error: "Dados incompletos" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!Number.isFinite(chargeAmount) || chargeAmount < 600) {
+      return new Response(
+        JSON.stringify({ error: "O valor mínimo para gerar PIX é R$ 6,00. Adicione outro produto ao pedido e tente novamente." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -79,7 +87,7 @@ Deno.serve(async (req) => {
     const buckpayPayload = {
       external_id: externalId,
       payment_method: "pix",
-      amount: total_amount || amount,
+      amount: chargeAmount,
       buyer: {
         name: safeName,
         email: buyer.email,

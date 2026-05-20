@@ -8,6 +8,9 @@ import { useCart } from '@/contexts/CartContext';
 import { z } from 'zod';
 
 const SUPPORT_WHATSAPP = 'https://wa.me/553131574399?text=Ol%C3%A1!%20Tive%20um%20problema%20no%20pagamento%20do%20meu%20pedido%20e%20preciso%20de%20ajuda.';
+const MIN_PIX_AMOUNT = 6;
+
+const formatCurrency = (value: number) => `R$ ${value.toFixed(2).replace('.', ',')}`;
 
 // Map raw API errors into friendly Portuguese messages
 const friendlyError = (raw: string): string => {
@@ -17,7 +20,9 @@ const friendlyError = (raw: string): string => {
   }
   if (r.includes('email')) return 'O e-mail informado parece inválido. Confira e tente novamente.';
   if (r.includes('phone') || r.includes('whatsapp')) return 'Número de WhatsApp inválido. Use DDD + 9 + 8 dígitos.';
-  if (r.includes('amount')) return 'Valor inválido para o PIX. Atualize a página e tente novamente.';
+  if (r.includes('amount') || r.includes('valor mínimo') || r.includes('minimo')) {
+    return 'O valor mínimo para gerar PIX é R$ 6,00. Adicione outro produto recomendado ao pedido e tente novamente.';
+  }
   if (r.includes('failed to fetch') || r.includes('network') || r.includes('non-2xx')) {
     return 'Não conseguimos falar com o gateway de pagamento agora. Verifique sua internet e tente novamente em instantes.';
   }
@@ -25,6 +30,25 @@ const friendlyError = (raw: string): string => {
     return 'Falha temporária ao gerar seu PIX. Tente novamente em alguns segundos. Se persistir, fale com a gente no WhatsApp.';
   }
   return raw || 'Erro inesperado ao gerar o pagamento. Tente novamente.';
+};
+
+const getPaymentErrorMessage = async (err: unknown): Promise<string> => {
+  if (!(err instanceof Error)) return 'Erro ao gerar pagamento';
+
+  const context = (err as Error & { context?: unknown }).context;
+  if (context instanceof Response) {
+    try {
+      const payload = await context.clone().json();
+      if (typeof payload?.error === 'string') return payload.error;
+    } catch {
+      try {
+        const text = await context.clone().text();
+        if (text) return text;
+      } catch { /* ignore */ }
+    }
+  }
+
+  return err.message;
 };
 
 const formatPhone = (value: string) => {
@@ -140,6 +164,8 @@ const Checkout = () => {
     .reduce((sum, b) => sum + b.price, 0);
   const totalPrice = itemsSubtotal + bumpsTotal;
   const totalAmountCents = Math.round(totalPrice * 100);
+  const minimumMissing = Math.max(0, MIN_PIX_AMOUNT - totalPrice);
+  const isBelowMinimumPix = totalPrice < MIN_PIX_AMOUNT;
 
   // For payment, use first product as main or combine names
   const combinedProductName = checkoutItems.map(i => i.quantity > 1 ? `${i.name} x${i.quantity}` : i.name).join(' + ');
@@ -157,6 +183,14 @@ const Checkout = () => {
       return;
     }
     setErrors({});
+
+    if (isBelowMinimumPix) {
+      setErrors({
+        general: `O valor mínimo para gerar PIX é ${formatCurrency(MIN_PIX_AMOUNT)}. Adicione mais ${formatCurrency(minimumMissing)} em produtos recomendados para continuar.`,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -199,7 +233,7 @@ const Checkout = () => {
       }
     } catch (err: unknown) {
       console.error('Payment error:', err);
-      const raw = err instanceof Error ? err.message : 'Erro ao gerar pagamento';
+      const raw = await getPaymentErrorMessage(err);
       setErrors({ general: friendlyError(raw) });
     } finally {
       setLoading(false);
@@ -311,9 +345,9 @@ const Checkout = () => {
                 <span className="text-xs text-muted-foreground">
                   {selectedBumps.size} {isSailorCheckout ? 'produto' : 'gamepass'}{selectedBumps.size > 1 ? (isSailorCheckout ? 's' : 'es') : ''} adicionado{selectedBumps.size > 1 ? 's' : ''}
                 </span>
-                <span className="font-display text-sm font-bold text-primary">
-                  + R$ {bumpsTotal.toFixed(2).replace('.', ',')}
-                </span>
+                  <span className="font-display text-sm font-bold text-primary">
+                    + {formatCurrency(bumpsTotal)}
+                  </span>
               </div>
             )}
           </div>
@@ -322,6 +356,17 @@ const Checkout = () => {
         {step === 'form' ? (
           <div className="card-gamer p-6">
             <h3 className="font-display text-lg font-bold text-foreground mb-6">Seus dados</h3>
+
+            {isBelowMinimumPix && !errors.general && (
+              <div className="mb-4 p-4 rounded-lg bg-neon-yellow/5 border border-neon-yellow/20">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-neon-yellow shrink-0 mt-0.5" />
+                  <p className="text-xs text-neon-yellow font-medium leading-relaxed">
+                    O PIX só pode ser gerado a partir de {formatCurrency(MIN_PIX_AMOUNT)}. Adicione mais {formatCurrency(minimumMissing)} nos produtos recomendados acima para liberar o pagamento.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {errors.general && (
               <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/30">
@@ -437,7 +482,7 @@ const Checkout = () => {
 
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || isBelowMinimumPix}
               className="btn-neon w-full text-sm py-3 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -446,7 +491,7 @@ const Checkout = () => {
                   Gerando PIX...
                 </>
               ) : (
-                `Gerar PIX · R$ ${totalPrice.toFixed(2).replace('.', ',')}`
+                isBelowMinimumPix ? `Pedido mínimo ${formatCurrency(MIN_PIX_AMOUNT)}` : `Gerar PIX · ${formatCurrency(totalPrice)}`
               )}
             </button>
           </div>
