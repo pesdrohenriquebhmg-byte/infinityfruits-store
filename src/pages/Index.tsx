@@ -105,6 +105,13 @@ const Index = () => {
           />
         )}
         {show('premium') && <PremiumProductSection />}
+        {show('gamepass') && (
+          <ProductSection
+            title="GAMEPASS"
+            subtitle="Gamepasses ativadas direto na sua conta — sem missão"
+            products={gamepassProducts}
+          />
+        )}
         {show('mutation') && <MutationSection products={mutationProducts} />}
         {show('godhuman') && (
           <ProductSection
