@@ -102,6 +102,7 @@ const Index = () => {
             products={v4Products}
           />
         )}
+        {show('premium') && <PremiumProductSection />}
         {show('mutation') && <MutationSection products={mutationProducts} />}
         {show('godhuman') && (
           <ProductSection
@@ -117,7 +118,6 @@ const Index = () => {
             products={miticaProducts}
           />
         )}
-        {show('premium') && <PremiumProductSection />}
         {show('fisica') && (
           <ProductSection
             title="FRUTAS FÍSICAS"
