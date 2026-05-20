@@ -26,10 +26,10 @@ type BloxCategory =
 const bloxCategories: { key: BloxCategory; label: string; count: number }[] = [
   { key: 'perm', label: 'Contas PERM', count: permProducts.length },
   { key: 'v4', label: 'Contas V4', count: v4Products.length },
+  { key: 'premium', label: 'Premium', count: premiumProducts.length },
   { key: 'mutation', label: 'Mutações', count: mutationProducts.length },
   { key: 'godhuman', label: 'Godhuman', count: godhumanProducts.length },
   { key: 'mitica', label: 'Mítica Aleatória', count: miticaProducts.length },
-  { key: 'premium', label: 'Premium', count: premiumProducts.length },
   { key: 'fisica', label: 'Frutas Físicas', count: fisicaProducts.length },
 ];
 
