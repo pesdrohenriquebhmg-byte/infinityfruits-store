@@ -11,7 +11,7 @@ import HowItWorks from '@/components/HowItWorks';
 import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import { permProducts, godhumanProducts, miticaProducts, v4Products, mutationProducts, fisicaProducts, premiumProducts } from '@/data/products';
+import { permProducts, godhumanProducts, miticaProducts, v4Products, mutationProducts, fisicaProducts, premiumProducts, gamepassProducts } from '@/data/products';
 import siteBg from '@/assets/site-bg.webp';
 
 type BloxCategory =
@@ -21,12 +21,14 @@ type BloxCategory =
   | 'godhuman'
   | 'mitica'
   | 'v4'
+  | 'gamepass'
   | 'fisica';
 
 const bloxCategories: { key: BloxCategory; label: string; count: number }[] = [
   { key: 'perm', label: 'Contas PERM', count: permProducts.length },
   { key: 'v4', label: 'Contas V4', count: v4Products.length },
   { key: 'premium', label: 'Premium', count: premiumProducts.length },
+  { key: 'gamepass', label: 'Gamepass', count: gamepassProducts.length },
   { key: 'mutation', label: 'Mutações', count: mutationProducts.length },
   { key: 'godhuman', label: 'Godhuman', count: godhumanProducts.length },
   { key: 'mitica', label: 'Mítica Aleatória', count: miticaProducts.length },
@@ -103,6 +105,13 @@ const Index = () => {
           />
         )}
         {show('premium') && <PremiumProductSection />}
+        {show('gamepass') && (
+          <ProductSection
+            title="GAMEPASS"
+            subtitle="Gamepasses ativadas direto na sua conta — sem missão"
+            products={gamepassProducts}
+          />
+        )}
         {show('mutation') && <MutationSection products={mutationProducts} />}
         {show('godhuman') && (
           <ProductSection

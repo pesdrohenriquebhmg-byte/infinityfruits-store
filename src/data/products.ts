@@ -76,6 +76,15 @@ export const premiumProducts: Product[] = [
   { id: 'conta-premium', name: 'Conta Premium — God Account', price: 169.90, image: '/images/conta-premium.webp', badge: 'mythical', category: 'perm', inStock: true },
 ];
 
+export const gamepassProducts: Product[] = [
+  { id: 'gp-darkblade', name: 'Dark Blade (Gamepass)', price: 8.90, image: '/images/gamepass-darkblade.jpg', badge: 'popular', category: 'gamepass', inStock: true },
+  { id: 'gp-notificador', name: 'Notificador de Frutas (Gamepass)', price: 12.90, image: '/images/gamepass-notificador.jpg', category: 'gamepass', inStock: true },
+  { id: 'gp-espaco', name: '+1 Espaço Fruta (Gamepass)', price: 8.40, image: '/images/gamepass-espaco.jpg', category: 'gamepass', inStock: true },
+  { id: 'gp-maestria', name: '2x Maestria (Gamepass)', price: 8.00, image: '/images/gamepass-maestria.jpg', category: 'gamepass', inStock: true },
+  { id: 'gp-money', name: '2x Money (Gamepass)', price: 8.00, image: '/images/gamepass-money.jpg', category: 'gamepass', inStock: true },
+  { id: 'gp-drop', name: '2x Drop (Gamepass)', price: 8.00, image: '/images/gamepass-drop.jpg', category: 'gamepass', inStock: true },
+];
+
 export interface OrderBump {
   id: string;
   name: string;
