@@ -11,7 +11,7 @@ import HowItWorks from '@/components/HowItWorks';
 import TrustSection from '@/components/TrustSection';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import { permProducts, godhumanProducts, miticaProducts, v4Products, mutationProducts, fisicaProducts, premiumProducts } from '@/data/products';
+import { permProducts, godhumanProducts, miticaProducts, v4Products, mutationProducts, fisicaProducts, premiumProducts, gamepassProducts } from '@/data/products';
 import siteBg from '@/assets/site-bg.webp';
 
 type BloxCategory =
