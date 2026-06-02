@@ -32,12 +32,10 @@ const typeMeta: Record<Proof['type'], { icon: typeof Camera; label: string; colo
 };
 
 const SocialProofSection = () => {
-  const [scrollIndex, setScrollIndex] = useState(0);
   const scroll = (dir: 1 | -1) => {
     const el = document.getElementById('proof-track');
     if (!el) return;
     el.scrollBy({ left: dir * 320, behavior: 'smooth' });
-    setScrollIndex(i => i + dir);
   };
 
   return (
