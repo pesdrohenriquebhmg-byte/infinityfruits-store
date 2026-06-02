@@ -72,7 +72,6 @@ const SocialProofSection = () => {
         <div
           id="proof-track"
           className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-none -mx-4 px-4"
-          style={{ scrollIndex } as React.CSSProperties}
         >
           {proofs.map((p, i) => {
             const meta = typeMeta[p.type];
