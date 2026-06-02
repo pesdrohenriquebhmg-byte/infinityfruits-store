@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Camera, MessageCircle, Receipt, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
