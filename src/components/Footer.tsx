@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="border-t border-border/60 bg-card/40 backdrop-blur-sm mt-8">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Marca */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
