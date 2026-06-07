@@ -222,6 +222,7 @@ const Checkout = () => {
 
     try {
       const phone = form.whatsapp.replace(/\D/g, '');
+      const document = form.cpf.replace(/\D/g, '');
       const selectedBumpsList = availableBumps
         .filter(b => selectedBumps.has(b.id))
         .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
@@ -233,7 +234,7 @@ const Checkout = () => {
           amount: Math.round(itemsSubtotal * 100),
           total_amount: totalAmountCents,
           bumps: selectedBumpsList,
-          buyer: { name: form.name, email: form.email, phone },
+          buyer: { name: form.name, email: form.email, phone, document },
         },
       });
 
@@ -250,6 +251,7 @@ const Checkout = () => {
         name: form.name,
         email: form.email,
         phone,
+        document,
       }));
       localStorage.setItem('checkout_order_id', data.order_id);
 
