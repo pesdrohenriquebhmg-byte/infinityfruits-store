@@ -1,5 +1,8 @@
-import { ShieldCheck, Zap, Star, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Zap, Star, ArrowRight, MessageCircle } from 'lucide-react';
 import logo from '@/assets/logo-infinity.webp';
+
+const DISCORD_LINK = 'https://discord.gg/KXTTMRhgJ8';
+const WHATSAPP_LINK = 'https://wa.me/553131574399';
 
 const HeroBanner = () => {
   return (
