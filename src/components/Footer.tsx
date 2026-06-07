@@ -54,37 +54,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Comunidade */}
-          <div>
-            <p className="font-display text-xs font-bold uppercase tracking-widest text-foreground mb-4">
-              Comunidade
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {[
-                { href: 'https://wa.me/553131574399', icon: MessageCircle, label: 'WhatsApp' },
-                { href: 'https://discord.gg/KXTTMRhgJ8', icon: MessageCircle, label: 'Discord' },
-                { href: 'https://www.tiktok.com/', icon: Music2, label: 'TikTok' },
-                { href: 'https://www.instagram.com/', icon: Instagram, label: 'Instagram' },
-                { href: 'https://www.youtube.com/', icon: Youtube, label: 'YouTube' },
-              ].map(({ href, icon: Icon, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-lg bg-background/60 border border-border hover:border-primary/50 hover:text-primary text-muted-foreground flex items-center justify-center transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
-            <div className="space-y-1.5 text-[11px] text-muted-foreground">
-              <p className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-primary" /> Compra segura</p>
-              <p className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-primary" /> Entrega automática</p>
-              <p className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-primary" /> Suporte 24h</p>
-            </div>
-          </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
