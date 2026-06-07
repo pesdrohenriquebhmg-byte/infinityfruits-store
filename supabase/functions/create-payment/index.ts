@@ -28,9 +28,9 @@ Deno.serve(async (req) => {
     const { product_id, product_name, amount, total_amount, bumps, buyer } = body;
     const chargeAmount = Number(total_amount || amount);
 
-    if (!product_id || !amount || !buyer?.name || !buyer?.email || !buyer?.phone) {
+    if (!product_id || !amount || !buyer?.name || !buyer?.email || !buyer?.phone || !buyer?.document) {
       return new Response(
-        JSON.stringify({ error: "Dados incompletos" }),
+        JSON.stringify({ error: "Dados incompletos (nome, e-mail, WhatsApp e CPF são obrigatórios)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -83,6 +83,7 @@ Deno.serve(async (req) => {
       return cleaned.includes(" ") ? cleaned : `${cleaned} Silva`;
     };
     const safeName = sanitizeName(buyer.name);
+    const document = String(buyer.document || "").replace(/\D/g, "");
 
     const buckpayPayload = {
       external_id: externalId,
@@ -92,6 +93,8 @@ Deno.serve(async (req) => {
         name: safeName,
         email: buyer.email,
         phone,
+        document,
+        document_type: "cpf",
       },
       product: {
         id: product_id,

@@ -12,12 +12,15 @@ type Review = {
 };
 
 const reviews: Review[] = [
-  { name: 'João M.', initials: 'JM', rating: 5, date: 'há 2 dias', product: 'Conta Kitsune PERM', text: 'Recebi em menos de 5 minutos. Tudo certinho, conta limpa.' },
-  { name: 'Maria C.', initials: 'MC', rating: 5, date: 'há 4 dias', product: 'Conta Premium', text: 'Comprei a Premium e veio tudo que prometeram. Vou voltar a comprar.' },
-  { name: 'Pedro A.', initials: 'PA', rating: 5, date: 'há 1 semana', product: 'Gamepass Dark Blade', text: 'Suporte muito atencioso. Ativaram na minha conta em 2 min.' },
-  { name: 'Ana R.', initials: 'AR', rating: 5, date: 'há 5 dias', product: 'Conta Dragon PERM', text: 'Tinha medo de cair em golpe, mas é loja séria mesmo. Muito bom.' },
-  { name: 'Lucas V.', initials: 'LV', rating: 5, date: 'há 3 dias', product: 'Empyrean (Kitsune)', text: 'Mutação rara entregue na hora. Melhor preço que achei.' },
-  { name: 'Beatriz F.', initials: 'BF', rating: 5, date: 'ontem', product: '2x Money Gamepass', text: 'Atendimento top, processo simples, recomendo demais.' },
+  { name: 'Gabriel S.', initials: 'GS', rating: 5, date: 'há 3 dias', product: 'Conta Kitsune PERM', text: 'Mano, tava com medo pq já tinha caído em golpe antes, mas chegou em uns 4 min depois do PIX. Conta com tudo certinho, level alto e a fruta na mochila. Recomendo!' },
+  { name: 'Letícia R.', initials: 'LR', rating: 5, date: 'há 1 semana', product: 'Gamepass 2x Money', text: 'Comprei a 2x money pro meu irmão de aniversário. Ativaram direto na conta dele, nem precisou passar senha nem nada. Suporte respondeu rapidão no whats.' },
+  { name: 'Matheus O.', initials: 'MO', rating: 5, date: 'ontem', product: 'Conta Dragon PERM', text: 'Preço bem mais barato que os outros sites que eu vi. Demorou uns 8 min pra cair mas chegou. Já é minha segunda compra aqui.' },
+  { name: 'Júlia A.', initials: 'JA', rating: 4, date: 'há 5 dias', product: 'Conta Premium', text: 'Tudo certo com a entrega, só achei que demoraria menos pq estava como entrega automática. Mas o suporte me ajudou e veio bonitinho. Vou comprar de novo.' },
+  { name: 'Pedro H.', initials: 'PH', rating: 5, date: 'há 2 dias', product: 'Empyrean (Mutação)', text: 'Procurei essa mutação em vários lugares e só achei aqui com preço bom. Veio sem problema, exatamente como mostrava na foto.' },
+  { name: 'Camila V.', initials: 'CV', rating: 5, date: 'há 6 dias', product: 'Gamepass Dark Blade', text: 'Comprei pelo celular, paguei o pix e em 2 min ja tava ativado na minha conta. Atendimento via whats foi educado. Top demais.' },
+  { name: 'Lucas F.', initials: 'LF', rating: 5, date: 'há 4 dias', product: 'Conta Leopard PERM', text: 'Já comprei umas 3 contas aqui pro grupo de amigos. Nunca deu problema, sempre entrega rápido. Confiança total já.' },
+  { name: 'Rafaela M.', initials: 'RM', rating: 5, date: 'há 10 dias', product: 'Conta Kitsune PERM', text: 'O que mais gostei foi de ter cnpj e tudo bonitinho no site. Deu confiança de comprar. Conta chegou perfeita, sem ban nem nada estranho.' },
+  { name: 'Vinícius B.', initials: 'VB', rating: 5, date: 'há 8 dias', product: 'Gamepass Fruit Notifier', text: 'Era pra dar de presente e o cara que recebeu amou. Processo todo simples, sem firula. Recomendo.' },
 ];
 
 const palette = ['bg-primary/15 text-primary', 'bg-secondary/15 text-secondary', 'bg-logo-yellow/15 text-logo-yellow', 'bg-neon-green/15 text-neon-green'];
