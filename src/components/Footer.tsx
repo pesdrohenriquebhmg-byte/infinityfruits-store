@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { MessageCircle, Music2, Instagram, Youtube, ShieldCheck, Zap, Clock } from 'lucide-react';
 import logo from '@/assets/logo-infinity.webp';
 
 const Footer = () => {
