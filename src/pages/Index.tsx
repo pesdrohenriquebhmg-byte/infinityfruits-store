@@ -164,9 +164,7 @@ const Index = () => {
         <div hidden>{visibleCategories.length}</div>
 
         <HowItWorks />
-        <SocialProofSection />
         <ReviewsSection />
-        <CommunitySection />
         <FaqSection />
         <Footer />
         <WhatsAppFloat />
