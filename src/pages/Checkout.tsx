@@ -130,7 +130,7 @@ const Checkout = () => {
     return [];
   }, [isCartMode, cart.items, singleProduct]);
 
-  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', terms: false });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', cpf: '', terms: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'form' | 'pix'>('form');
   const [copied, setCopied] = useState(false);
