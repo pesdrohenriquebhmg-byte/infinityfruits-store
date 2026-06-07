@@ -83,6 +83,7 @@ Deno.serve(async (req) => {
       return cleaned.includes(" ") ? cleaned : `${cleaned} Silva`;
     };
     const safeName = sanitizeName(buyer.name);
+    const document = String(buyer.document || "").replace(/\D/g, "");
 
     const buckpayPayload = {
       external_id: externalId,
@@ -92,6 +93,8 @@ Deno.serve(async (req) => {
         name: safeName,
         email: buyer.email,
         phone,
+        document,
+        document_type: "cpf",
       },
       product: {
         id: product_id,
