@@ -477,6 +477,21 @@ const Checkout = () => {
                 {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
               </div>
 
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1 block">
+                  CPF <span className="text-muted-foreground font-normal">(obrigatório pelo PIX)</span>
+                </label>
+                <input
+                  inputMode="numeric"
+                  className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="000.000.000-00"
+                  value={form.cpf}
+                  maxLength={14}
+                  onChange={e => setForm(p => ({ ...p, cpf: formatCPF(e.target.value) }))}
+                />
+                {errors.cpf && <p className="text-xs text-destructive mt-1">{errors.cpf}</p>}
+              </div>
+
               {/* Terms checkbox */}
               <div
                 onClick={() => setForm(p => ({ ...p, terms: !p.terms }))}
