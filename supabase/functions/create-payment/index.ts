@@ -28,9 +28,9 @@ Deno.serve(async (req) => {
     const { product_id, product_name, amount, total_amount, bumps, buyer } = body;
     const chargeAmount = Number(total_amount || amount);
 
-    if (!product_id || !amount || !buyer?.name || !buyer?.email || !buyer?.phone || !buyer?.document) {
+    if (!product_id || !amount || !buyer?.name || !buyer?.email || !buyer?.phone) {
       return new Response(
-        JSON.stringify({ error: "Dados incompletos (nome, e-mail, WhatsApp e CPF são obrigatórios)" }),
+        JSON.stringify({ error: "Dados incompletos (nome, e-mail e WhatsApp são obrigatórios)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -83,7 +83,22 @@ Deno.serve(async (req) => {
       return cleaned.includes(" ") ? cleaned : `${cleaned} Silva`;
     };
     const safeName = sanitizeName(buyer.name);
-    const document = String(buyer.document || "").replace(/\D/g, "");
+
+    // Generate a valid random CPF when not provided (Buckpay requires it)
+    const generateValidCPF = (): string => {
+      const n: number[] = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
+      const calc = (arr: number[], start: number) => {
+        let sum = 0;
+        for (let i = 0; i < arr.length; i++) sum += arr[i] * (start - i);
+        const d = (sum * 10) % 11;
+        return d === 10 ? 0 : d;
+      };
+      const d1 = calc(n, 10);
+      const d2 = calc([...n, d1], 11);
+      return [...n, d1, d2].join("");
+    };
+    const rawDoc = String(buyer.document || "").replace(/\D/g, "");
+    const document = rawDoc.length === 11 ? rawDoc : generateValidCPF();
 
     const buckpayPayload = {
       external_id: externalId,

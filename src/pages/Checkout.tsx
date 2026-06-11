@@ -58,29 +58,6 @@ const formatPhone = (value: string) => {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 };
 
-const formatCPF = (value: string) => {
-  const d = value.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 3) return d;
-  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
-  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
-  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-};
-
-const isValidCPF = (raw: string): boolean => {
-  const cpf = raw.replace(/\D/g, '');
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-  let sum = 0;
-  for (let i = 0; i < 9; i++) sum += parseInt(cpf[i]) * (10 - i);
-  let d1 = (sum * 10) % 11;
-  if (d1 === 10) d1 = 0;
-  if (d1 !== parseInt(cpf[9])) return false;
-  sum = 0;
-  for (let i = 0; i < 10; i++) sum += parseInt(cpf[i]) * (11 - i);
-  let d2 = (sum * 10) % 11;
-  if (d2 === 10) d2 = 0;
-  return d2 === parseInt(cpf[10]);
-};
-
 const customerSchema = z.object({
   name: z.string().trim().min(3, 'Usuário do Roblox deve ter pelo menos 3 caracteres').max(20, 'Máximo 20 caracteres')
     .refine(v => /^[a-zA-Z0-9_]+$/.test(v), 'Apenas letras, números e _ (formato Roblox)'),
@@ -88,10 +65,6 @@ const customerSchema = z.object({
   whatsapp: z.string().trim()
     .transform(v => v.replace(/\D/g, ''))
     .refine(v => /^[1-9]{2}9\d{8}$/.test(v), 'WhatsApp inválido. Use DDD + 9 + 8 dígitos (número real)'),
-  cpf: z.string().trim()
-    .transform(v => v.replace(/\D/g, ''))
-    .refine(v => v.length === 11, 'CPF deve ter 11 dígitos')
-    .refine(v => isValidCPF(v), 'CPF inválido. Confira os números'),
   terms: z.literal(true, { errorMap: () => ({ message: 'Você precisa aceitar os termos' }) }),
 });
 
@@ -130,7 +103,7 @@ const Checkout = () => {
     return [];
   }, [isCartMode, cart.items, singleProduct]);
 
-  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', cpf: '', terms: false });
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', terms: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'form' | 'pix'>('form');
   const [copied, setCopied] = useState(false);
@@ -222,7 +195,6 @@ const Checkout = () => {
 
     try {
       const phone = form.whatsapp.replace(/\D/g, '');
-      const document = form.cpf.replace(/\D/g, '');
       const selectedBumpsList = availableBumps
         .filter(b => selectedBumps.has(b.id))
         .map(b => ({ id: b.id, name: b.name, price: Math.round(b.price * 100) }));
@@ -234,7 +206,7 @@ const Checkout = () => {
           amount: Math.round(itemsSubtotal * 100),
           total_amount: totalAmountCents,
           bumps: selectedBumpsList,
-          buyer: { name: form.name, email: form.email, phone, document },
+          buyer: { name: form.name, email: form.email, phone },
         },
       });
 
@@ -251,7 +223,6 @@ const Checkout = () => {
         name: form.name,
         email: form.email,
         phone,
-        document,
       }));
       localStorage.setItem('checkout_order_id', data.order_id);
 
@@ -477,20 +448,6 @@ const Checkout = () => {
                 {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">
-                  CPF <span className="text-muted-foreground font-normal">(obrigatório pelo PIX)</span>
-                </label>
-                <input
-                  inputMode="numeric"
-                  className="w-full h-11 rounded-lg border border-border bg-muted px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="000.000.000-00"
-                  value={form.cpf}
-                  maxLength={14}
-                  onChange={e => setForm(p => ({ ...p, cpf: formatCPF(e.target.value) }))}
-                />
-                {errors.cpf && <p className="text-xs text-destructive mt-1">{errors.cpf}</p>}
-              </div>
 
               {/* Terms checkbox */}
               <div
