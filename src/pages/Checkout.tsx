@@ -275,20 +275,6 @@ const Checkout = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Selos de confiança */}
-        <div className="mb-5 grid grid-cols-3 gap-2">
-          {[
-            { icon: Zap, label: 'Aprovação Instantânea' },
-            { icon: Shield, label: 'Pagamento Seguro' },
-            { icon: Clock, label: 'Entrega Rápida' },
-          ].map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-card/70 border border-border/60">
-              <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span className="text-[10px] sm:text-[11px] font-medium text-foreground leading-tight">{label}</span>
-            </div>
-          ))}
-        </div>
-
         {/* Products Summary */}
         <div className="card-gamer p-4 mb-6 space-y-3">
           {checkoutItems.map(item => (
@@ -447,7 +433,6 @@ const Checkout = () => {
                 />
                 {errors.whatsapp && <p className="text-xs text-destructive mt-1">{errors.whatsapp}</p>}
               </div>
-
 
               {/* Terms checkbox */}
               <div

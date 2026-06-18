@@ -47,26 +47,25 @@ const SailorProductCard = ({ product }: { product: SailorProduct }) => {
             </p>
           )}
           <div className="flex items-baseline gap-1 mb-1">
-            <span className="text-xl md:text-2xl font-display font-black text-primary glow-text-cyan whitespace-nowrap">
+            <span className="text-2xl font-display font-black text-primary glow-text-cyan">
               R$ {product.price.toFixed(2).replace('.', ',')}
             </span>
           </div>
-          <p className="text-[11px] md:text-xs text-muted-foreground mb-3 flex items-center gap-1">
+          <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1">
             <img src="https://cdn.centralcart.io/public/gateway-icons/icon-pix.svg" alt="PIX" className="w-4 h-4" />
             À vista no Pix
           </p>
-          <div className="flex gap-1.5">
+          <div className="flex gap-2">
             <button
               onClick={() => navigate(`/checkout?produto=${product.id}`)}
-              className="btn-neon flex-1 text-xs md:text-sm py-2 px-2"
+              className="btn-neon flex-1 text-sm py-2"
             >
               Comprar
             </button>
             <button
               onClick={() => addItem({ id: product.id, name: product.name, price: product.price, image: product.image })}
-              className="shrink-0 w-9 md:w-10 rounded-lg bg-card border border-primary/30 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all"
+              className="w-10 rounded-lg bg-card border border-primary/30 flex items-center justify-center hover:border-primary hover:bg-primary/10 transition-all"
               title="Adicionar ao carrinho"
-              aria-label="Adicionar ao carrinho"
             >
               <ShoppingCart className="w-4 h-4 text-primary" />
             </button>
