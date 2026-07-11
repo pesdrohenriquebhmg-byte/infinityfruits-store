@@ -110,6 +110,7 @@ export const allProducts: Product[] = [
   ...v4Products,
   ...mutationProducts,
   ...fisicaProducts,
+  ...gamepassProducts,
 ];
 
 export const testimonials = [
