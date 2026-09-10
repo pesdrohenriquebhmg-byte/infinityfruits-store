@@ -275,6 +275,7 @@ const Checkout = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <h1 className="sr-only">Finalizar Compra</h1>
         {/* Products Summary */}
         <div className="card-gamer p-4 mb-6 space-y-3">
           {checkoutItems.map(item => (
