@@ -64,6 +64,7 @@ const Index = () => {
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
                 onClick={() => setFilter('all')}
+                aria-label="Mostrar todas as categorias"
                 className={`shrink-0 px-4 py-2 rounded-lg text-xs font-display font-bold uppercase tracking-wider transition-all ${
                   filter === 'all'
                     ? 'bg-primary text-primary-foreground shadow-[0_0_15px_hsl(180_100%_50%_/_0.4)]'
@@ -76,6 +77,7 @@ const Index = () => {
                 <button
                   key={c.key}
                   onClick={() => setFilter(c.key)}
+                  aria-label={`Filtrar por ${c.label}`}
                   className={`shrink-0 px-4 py-2 rounded-lg text-xs font-display font-bold uppercase tracking-wider transition-all ${
                     filter === c.key
                       ? 'bg-primary text-primary-foreground shadow-[0_0_15px_hsl(180_100%_50%_/_0.4)]'

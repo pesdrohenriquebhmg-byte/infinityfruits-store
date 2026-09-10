@@ -38,6 +38,7 @@ const Navbar = () => {
           </div>
           <button
             onClick={() => setIsOpen(true)}
+            aria-label="Carrinho"
             className="relative w-12 h-12 rounded-lg bg-card/80 border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all"
           >
             <ShoppingCart className="w-6 h-6 text-foreground" />
