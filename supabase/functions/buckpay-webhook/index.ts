@@ -75,6 +75,45 @@ Deno.serve(async (req) => {
       return json({ error: "Missing id or status" }, 400);
     }
 
+    // --- Authentication ---
+    // Preferred: the shared token (our postbackUrl carries ?token=).
+    // Fallback (Buckpay panel-configured URLs have no token): verify the
+    // transaction directly against the Buckpay API with our secret key. Only a
+    // transaction that really exists at Buckpay — with a matching status — is
+    // accepted, so forged payloads are still rejected.
+    if (!tokenOk) {
+      let verified = false;
+      try {
+        const check = await fetch(`${BUCKPAY_API_URL}/v1/transactions/${buckpayId}`, {
+          headers: {
+            Authorization: `Bearer ${BUCKPAY_SECRET}`,
+            "User-Agent": "Buckpay API",
+            "Content-Type": "application/json",
+          },
+        });
+        if (check.ok) {
+          const remote = await check.json();
+          const remoteStatus: string | undefined = remote?.data?.status ?? remote?.status;
+          if (remoteStatus) {
+            verified = true;
+            // Trust the gateway's own copy over the posted body.
+            status = remoteStatus;
+          }
+        } else {
+          console.error(`Buckpay verification failed for ${buckpayId}: HTTP ${check.status}`);
+        }
+      } catch (verifyError) {
+        console.error("Buckpay verification error:", verifyError);
+      }
+
+      if (!verified) {
+        console.error(`Unauthorized webhook attempt (no valid token, transaction ${buckpayId} not verifiable)`);
+        return json({ error: "Unauthorized" }, 401);
+      }
+      console.log(`Webhook authenticated via Buckpay API verification: ${buckpayId} status=${status}`);
+    }
+
+
     // --- Locate the order. Several strategies, because Buckpay does not always
     // echo external_id, and transaction.created can race create-payment's update. ---
     const findOrder = async (): Promise<OrderRow | null> => {
