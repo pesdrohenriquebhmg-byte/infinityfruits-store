@@ -14,6 +14,8 @@ const json = (body: unknown, status = 200) =>
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+const BUCKPAY_API_URL = "https://api.realtechdev.com.br";
+
 type OrderRow = {
   id: string;
   status: string;
@@ -60,7 +62,7 @@ Deno.serve(async (req) => {
     const data = body?.data ?? body ?? {};
 
     const buckpayId: string | undefined = data.id ?? undefined;
-    const status: string | undefined = data.status ?? undefined;
+    let status: string | undefined = data.status ?? undefined;
     // external_id / pix code can appear at different levels depending on the event
     const externalId: string | undefined =
       data.external_id ?? data.externalId ?? data.offer?.external_id ?? body?.external_id ?? undefined;
