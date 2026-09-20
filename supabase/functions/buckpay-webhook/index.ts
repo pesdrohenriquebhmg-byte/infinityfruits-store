@@ -6,6 +6,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, user-agent, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+type OrderRow = {
+  id: string;
+  status: string;
+  external_id: string | null;
+  buckpay_id: string | null;
+  pix_code: string | null;
+  total_amount: number | null;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -17,18 +34,13 @@ Deno.serve(async (req) => {
       throw new Error("BUCKPAY_SECRET_TOKEN is not configured");
     }
 
-    // Verify the request comes from Buckpay (check authorization header)
+    // --- Authenticate the webhook (header or ?token=) ---
     const authHeader = req.headers.get("authorization");
     if (authHeader !== `Bearer ${BUCKPAY_SECRET}` && authHeader !== BUCKPAY_SECRET) {
-      // Also check for token in query params or custom header
       const url = new URL(req.url);
-      const tokenParam = url.searchParams.get("token");
-      if (tokenParam !== BUCKPAY_SECRET) {
+      if (url.searchParams.get("token") !== BUCKPAY_SECRET) {
         console.error("Unauthorized webhook attempt");
-        return new Response(
-          JSON.stringify({ error: "Unauthorized" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return json({ error: "Unauthorized" }, 401);
       }
     }
 
@@ -38,94 +50,106 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json();
-    console.log("Webhook received:", JSON.stringify(body));
+    const event: string = body?.event ?? "unknown";
+    // Buckpay nests everything under `data`; some payloads come flat.
+    const data = body?.data ?? body ?? {};
 
-    const data = body.data || body;
-    const buckpayId = data.id;
-    const status = data.status;
-    const netAmount = data.net_amount;
-    const pixCode = data.pix_code;
+    const buckpayId: string | undefined = data.id ?? undefined;
+    const status: string | undefined = data.status ?? undefined;
+    // external_id / pix code can appear at different levels depending on the event
+    const externalId: string | undefined =
+      data.external_id ?? data.externalId ?? data.offer?.external_id ?? body?.external_id ?? undefined;
+    const pixCode: string | undefined =
+      data.pix_code ?? data.pix?.code ?? body?.pix_code ?? undefined;
+    const totalAmount: number | undefined =
+      typeof data.total_amount === "number" ? data.total_amount : undefined;
+
+    console.log(`Webhook ${event}: id=${buckpayId} status=${status} external_id=${externalId ?? "-"} amount=${totalAmount ?? "-"}`);
 
     if (!buckpayId || !status) {
-      return new Response(
-        JSON.stringify({ error: "Missing id or status" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      return json({ error: "Missing id or status" }, 400);
+    }
+
+    // --- Locate the order. Several strategies, because Buckpay does not always
+    // echo external_id, and transaction.created can race create-payment's update. ---
+    const findOrder = async (): Promise<OrderRow | null> => {
+      const select = "id,status,external_id,buckpay_id,pix_code,total_amount";
+
+      const byBuckpay = await supabase
+        .from("orders").select(select).eq("buckpay_id", buckpayId).maybeSingle();
+      if (byBuckpay.data) return byBuckpay.data as OrderRow;
+
+      if (externalId) {
+        const byExternal = await supabase
+          .from("orders").select(select).eq("external_id", externalId).maybeSingle();
+        if (byExternal.data) return byExternal.data as OrderRow;
+      }
+
+      if (pixCode) {
+        const byPix = await supabase
+          .from("orders").select(select).eq("pix_code", pixCode)
+          .order("created_at", { ascending: false }).limit(1).maybeSingle();
+        if (byPix.data) return byPix.data as OrderRow;
+      }
+
+      return null;
+    };
+
+    // Retry briefly: create-payment may still be writing buckpay_id/pix_code.
+    let order = await findOrder();
+    for (let attempt = 0; !order && attempt < 4; attempt++) {
+      await sleep(600);
+      order = await findOrder();
+    }
+
+    if (!order) {
+      // Unknown transaction (gateway test event, or a charge created outside this
+      // store). Acknowledge with 200 so Buckpay stops retrying forever.
+      console.warn(
+        `Ignoring webhook for unknown transaction: event=${event} buckpay_id=${buckpayId} external_id=${externalId ?? "-"}`
       );
+      return json({ success: true, ignored: true, reason: "order_not_found", buckpay_id: buckpayId });
     }
 
-    // Map Buckpay status to our status
+    // --- Map Buckpay status to our status ---
     let orderStatus = "pending";
-    if (status === "paid" || status === "approved") {
-      orderStatus = "paid";
-    } else if (status === "expired" || status === "cancelled" || status === "refunded") {
-      orderStatus = status;
-    } else if (status === "waiting_payment") {
-      orderStatus = "pending";
+    if (status === "paid" || status === "approved") orderStatus = "paid";
+    else if (status === "expired" || status === "cancelled" || status === "refunded") orderStatus = status;
+
+    // --- Idempotency: never downgrade or re-process a settled order ---
+    if (order.status === "paid" && orderStatus !== "paid") {
+      console.log(`Order ${order.id} already paid; ignoring ${status}`);
+      return json({ success: true, status: order.status, idempotent: true });
+    }
+    if (order.status === orderStatus && orderStatus === "paid") {
+      console.log(`Order ${order.id} already paid; duplicate webhook ignored`);
+      return json({ success: true, status: "paid", idempotent: true });
     }
 
-    // Update order by buckpay_id
     const updateData: Record<string, unknown> = {
       status: orderStatus,
       buckpay_response: body,
     };
+    // Backfill the link so later events resolve on the first lookup.
+    if (!order.buckpay_id) updateData.buckpay_id = buckpayId;
+    if (!order.pix_code && pixCode) updateData.pix_code = pixCode;
+    if (orderStatus === "paid") updateData.paid_at = new Date().toISOString();
 
-    if (orderStatus === "paid") {
-      updateData.paid_at = new Date().toISOString();
-    }
-
-    // Try update by buckpay_id first
-    let updated = false;
-    
-    const { data: updatedOrder, error: dbError } = await supabase
+    const { error: updateError } = await supabase
       .from("orders")
       .update(updateData)
-      .eq("buckpay_id", buckpayId)
-      .select()
-      .single();
+      .eq("id", order.id);
 
-    if (!dbError && updatedOrder) {
-      updated = true;
+    if (updateError) {
+      console.error("Failed to update order:", updateError);
+      return json({ error: "Failed to update order" }, 500);
     }
 
-    // Fallback: try by external_id
-    if (!updated && data.external_id) {
-      const { data: order2, error: err2 } = await supabase
-        .from("orders")
-        .update(updateData)
-        .eq("external_id", data.external_id)
-        .select()
-        .single();
-      if (!err2 && order2) updated = true;
-    }
-
-    // Fallback: try by pix_code (handles race condition where buckpay_id wasn't saved yet)
-    if (!updated && pixCode) {
-      const { data: order3, error: err3 } = await supabase
-        .from("orders")
-        .update(updateData)
-        .eq("pix_code", pixCode)
-        .select()
-        .single();
-      if (!err3 && order3) updated = true;
-    }
-
-    if (!updated) {
-      console.error("Order not found for buckpay_id:", buckpayId, "external_id:", data.external_id, "pix_code:", pixCode);
-      throw new Error("Order not found");
-    }
-
-    console.log(`Order updated: buckpay_id=${buckpayId}, status=${orderStatus}`);
-
-    return new Response(
-      JSON.stringify({ success: true, status: orderStatus }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.log(`Order ${order.id} updated: event=${event} status=${orderStatus}`);
+    return json({ success: true, order_id: order.id, status: orderStatus });
   } catch (error: unknown) {
     console.error("Webhook error:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json({ error: errorMessage }, 500);
   }
 });
