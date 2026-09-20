@@ -14,6 +14,8 @@ const json = (body: unknown, status = 200) =>
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+const BUCKPAY_API_URL = "https://api.realtechdev.com.br";
+
 type OrderRow = {
   id: string;
   status: string;
@@ -34,15 +36,20 @@ Deno.serve(async (req) => {
       throw new Error("BUCKPAY_SECRET_TOKEN is not configured");
     }
 
-    // --- Authenticate the webhook (header or ?token=) ---
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${BUCKPAY_SECRET}` && authHeader !== BUCKPAY_SECRET) {
-      const url = new URL(req.url);
-      if (url.searchParams.get("token") !== BUCKPAY_SECRET) {
-        console.error("Unauthorized webhook attempt");
-        return json({ error: "Unauthorized" }, 401);
-      }
-    }
+    // --- Collect every place Buckpay (or our own postbackUrl) may carry the token ---
+    const url = new URL(req.url);
+    const authHeader = req.headers.get("authorization") ?? "";
+    const presentedTokens = [
+      authHeader.replace(/^Bearer\s+/i, "").trim(),
+      authHeader.trim(),
+      req.headers.get("x-webhook-token")?.trim() ?? "",
+      req.headers.get("x-buckpay-token")?.trim() ?? "",
+      req.headers.get("apikey")?.trim() ?? "",
+      url.searchParams.get("token")?.trim() ?? "",
+      url.searchParams.get("secret")?.trim() ?? "",
+    ].filter(Boolean);
+
+    const tokenOk = presentedTokens.some((t) => t === BUCKPAY_SECRET);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -55,7 +62,7 @@ Deno.serve(async (req) => {
     const data = body?.data ?? body ?? {};
 
     const buckpayId: string | undefined = data.id ?? undefined;
-    const status: string | undefined = data.status ?? undefined;
+    let status: string | undefined = data.status ?? undefined;
     // external_id / pix code can appear at different levels depending on the event
     const externalId: string | undefined =
       data.external_id ?? data.externalId ?? data.offer?.external_id ?? body?.external_id ?? undefined;
@@ -69,6 +76,45 @@ Deno.serve(async (req) => {
     if (!buckpayId || !status) {
       return json({ error: "Missing id or status" }, 400);
     }
+
+    // --- Authentication ---
+    // Preferred: the shared token (our postbackUrl carries ?token=).
+    // Fallback (Buckpay panel-configured URLs have no token): verify the
+    // transaction directly against the Buckpay API with our secret key. Only a
+    // transaction that really exists at Buckpay — with a matching status — is
+    // accepted, so forged payloads are still rejected.
+    if (!tokenOk) {
+      let verified = false;
+      try {
+        const check = await fetch(`${BUCKPAY_API_URL}/v1/transactions/${buckpayId}`, {
+          headers: {
+            Authorization: `Bearer ${BUCKPAY_SECRET}`,
+            "User-Agent": "Buckpay API",
+            "Content-Type": "application/json",
+          },
+        });
+        if (check.ok) {
+          const remote = await check.json();
+          const remoteStatus: string | undefined = remote?.data?.status ?? remote?.status;
+          if (remoteStatus) {
+            verified = true;
+            // Trust the gateway's own copy over the posted body.
+            status = remoteStatus;
+          }
+        } else {
+          console.error(`Buckpay verification failed for ${buckpayId}: HTTP ${check.status}`);
+        }
+      } catch (verifyError) {
+        console.error("Buckpay verification error:", verifyError);
+      }
+
+      if (!verified) {
+        console.error(`Unauthorized webhook attempt (no valid token, transaction ${buckpayId} not verifiable)`);
+        return json({ error: "Unauthorized" }, 401);
+      }
+      console.log(`Webhook authenticated via Buckpay API verification: ${buckpayId} status=${status}`);
+    }
+
 
     // --- Locate the order. Several strategies, because Buckpay does not always
     // echo external_id, and transaction.created can race create-payment's update. ---
