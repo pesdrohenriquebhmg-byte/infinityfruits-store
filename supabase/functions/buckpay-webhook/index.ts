@@ -34,15 +34,20 @@ Deno.serve(async (req) => {
       throw new Error("BUCKPAY_SECRET_TOKEN is not configured");
     }
 
-    // --- Authenticate the webhook (header or ?token=) ---
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== `Bearer ${BUCKPAY_SECRET}` && authHeader !== BUCKPAY_SECRET) {
-      const url = new URL(req.url);
-      if (url.searchParams.get("token") !== BUCKPAY_SECRET) {
-        console.error("Unauthorized webhook attempt");
-        return json({ error: "Unauthorized" }, 401);
-      }
-    }
+    // --- Collect every place Buckpay (or our own postbackUrl) may carry the token ---
+    const url = new URL(req.url);
+    const authHeader = req.headers.get("authorization") ?? "";
+    const presentedTokens = [
+      authHeader.replace(/^Bearer\s+/i, "").trim(),
+      authHeader.trim(),
+      req.headers.get("x-webhook-token")?.trim() ?? "",
+      req.headers.get("x-buckpay-token")?.trim() ?? "",
+      req.headers.get("apikey")?.trim() ?? "",
+      url.searchParams.get("token")?.trim() ?? "",
+      url.searchParams.get("secret")?.trim() ?? "",
+    ].filter(Boolean);
+
+    const tokenOk = presentedTokens.some((t) => t === BUCKPAY_SECRET);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
