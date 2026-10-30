@@ -108,6 +108,23 @@ Deno.serve(async (req) => {
         console.error("Buckpay verification error:", verifyError);
       }
 
+      // Second fallback: the transaction must match an order we created
+      // ourselves (same gateway ID AND same PIX code or same amount). These
+      // values are only known to us and the gateway.
+      if (!verified) {
+        const { data: known } = await supabase
+          .from("orders")
+          .select("pix_code,total_amount")
+          .eq("buckpay_id", buckpayId)
+          .maybeSingle();
+        if (known) {
+          const pixMatch = !!pixCode && known.pix_code === pixCode;
+          const amountMatch =
+            typeof totalAmount === "number" && Number(known.total_amount) === totalAmount;
+          verified = pixMatch || amountMatch;
+        }
+      }
+
       if (!verified) {
         console.error(`Unauthorized webhook attempt (no valid token, transaction ${buckpayId} not verifiable)`);
         return json({ error: "Unauthorized" }, 401);
